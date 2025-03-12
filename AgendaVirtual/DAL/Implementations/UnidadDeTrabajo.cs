@@ -10,15 +10,16 @@ namespace DAL.Implementations
 {
     public class UnidadDeTrabajo : IUnidadDeTrabajo
     {
+        public IUsuarioDAL UsuarioDAL { get; set; }
 
         private AgendaVirtualContext _agendaVirtualContext;
 
-        public UnidadDeTrabajo(AgendaVirtualContext agendaVirtualContext
+        public UnidadDeTrabajo(AgendaVirtualContext agendaVirtualContext, IUsuarioDAL usuarioDAL
 
             )
         {
             this._agendaVirtualContext = agendaVirtualContext;
-
+            this.UsuarioDAL = usuarioDAL;
         }
 
         public bool Complete()

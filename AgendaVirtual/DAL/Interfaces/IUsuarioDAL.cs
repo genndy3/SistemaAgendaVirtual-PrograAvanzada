@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Entities.Entities;
 
 namespace DAL.Interfaces
 {
-    public interface IUnidadDeTrabajo : IDisposable
+    public interface IUsuarioDAL : IDALGenerico<Usuario>
     {
-        IUsuarioDAL UsuarioDAL { get; set; }
-        bool Complete();
     }
 }
