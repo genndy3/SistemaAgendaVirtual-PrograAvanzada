@@ -1,5 +1,7 @@
 using BackEnd.Services.Implementations;
+using BackEnd.Services.Interfaces;
 using DAL.Implementations;
+using DAL.Interfaces;
 using Entities.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
@@ -19,7 +21,10 @@ builder.Services.AddDbContext<AgendaVirtualContext>(optionsAction =>
                      .UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 
      );
-builder.Services.AddScoped<UnidadDeTrabajo, UnidadDeTrabajo>();
+builder.Services.AddScoped<IUnidadDeTrabajo, UnidadDeTrabajo>();
+
+builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddScoped<IUsuarioDAL, UsuarioDAL>();
 
 #endregion
 
