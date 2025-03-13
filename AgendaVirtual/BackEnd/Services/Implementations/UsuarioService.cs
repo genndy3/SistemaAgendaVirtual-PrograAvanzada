@@ -39,7 +39,7 @@ namespace BackEnd.Services.Implementations
 
         public UsuarioDTO Add(UsuarioDTO usuarioDTO)
         {
-            _unidadDeTrabajo.UsuarioDAL.Add(Convertir(usuarioDTO));
+            _unidadDeTrabajo.usuarioDAL.Add(Convertir(usuarioDTO));
             _unidadDeTrabajo.Complete();
             return usuarioDTO;
         }
@@ -47,31 +47,31 @@ namespace BackEnd.Services.Implementations
         public UsuarioDTO Delete(int id)
         {
             Usuario usuario = new Usuario { IdUsuario = id };
-            _unidadDeTrabajo.UsuarioDAL.Remove(usuario);
+            _unidadDeTrabajo.usuarioDAL.Remove(usuario);
             _unidadDeTrabajo.Complete();
             return Convertir(usuario);
         }
 
         public List<UsuarioDTO> GetAll()
         {
-            var usuarios = _unidadDeTrabajo.UsuarioDAL.GetAll();
-            List<UsuarioDTO> employeesDTO = new List<UsuarioDTO>();
+            var usuarios = _unidadDeTrabajo.usuarioDAL.GetAll();
+            List<UsuarioDTO> usuariosDTO = new List<UsuarioDTO>();
             foreach (var usuario in usuarios)
             {
-                employeesDTO.Add(Convertir(usuario));
+                usuariosDTO.Add(Convertir(usuario));
             }
-            return employeesDTO;
+            return usuariosDTO;
         }
 
         public UsuarioDTO Get(int id)
         {
-            var employee = _unidadDeTrabajo.UsuarioDAL.Get(id);
-            return Convertir(employee);
+            var usuario = _unidadDeTrabajo.usuarioDAL.Get(id);
+            return Convertir(usuario);
         }
 
         public UsuarioDTO Update(UsuarioDTO usuarioDTO)
         {
-            _unidadDeTrabajo.UsuarioDAL.Update(Convertir(usuarioDTO));
+            _unidadDeTrabajo.usuarioDAL.Update(Convertir(usuarioDTO));
             _unidadDeTrabajo.Complete();
             return usuarioDTO;
         }
