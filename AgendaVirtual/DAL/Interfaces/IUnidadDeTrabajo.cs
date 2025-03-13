@@ -10,6 +10,7 @@ namespace DAL.Interfaces
     {
         IUsuarioDAL usuarioDAL { get; set; }
         IEquipoDAL equipoDAL { get; set; }
+        IUsuarioEquipoDAL usuarioEquipoDAL { get; set; }
         bool Complete();
     }
 }
