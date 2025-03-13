@@ -8,7 +8,8 @@ namespace DAL.Interfaces
 {
     public interface IUnidadDeTrabajo : IDisposable
     {
-        IUsuarioDAL UsuarioDAL { get; set; }
+        IUsuarioDAL usuarioDAL { get; set; }
+        IEquipoDAL equipoDAL { get; set; }
         bool Complete();
     }
 }
