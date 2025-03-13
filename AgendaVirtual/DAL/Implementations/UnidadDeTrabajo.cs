@@ -12,16 +12,18 @@ namespace DAL.Implementations
     {
         public IUsuarioDAL usuarioDAL { get; set; }
         public IEquipoDAL equipoDAL { get; set; }
+        public IUsuarioEquipoDAL usuarioEquipoDAL { get; set; }
 
         private AgendaVirtualContext _agendaVirtualContext;
 
-        public UnidadDeTrabajo(AgendaVirtualContext agendaVirtualContext, IUsuarioDAL usuarioDAL, IEquipoDAL equipoDAL
+        public UnidadDeTrabajo(AgendaVirtualContext agendaVirtualContext, IUsuarioDAL usuarioDAL, IEquipoDAL equipoDAL, IUsuarioEquipoDAL usuarioEquipoDAL
 
             )
         {
             this._agendaVirtualContext = agendaVirtualContext;
             this.usuarioDAL = usuarioDAL;
             this.equipoDAL = equipoDAL;
+            this.usuarioEquipoDAL = usuarioEquipoDAL;
         }
 
         public bool Complete()
