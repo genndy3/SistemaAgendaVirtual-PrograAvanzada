@@ -13,6 +13,7 @@ namespace DAL.Interfaces
         IUsuarioEquipoDAL usuarioEquipoDAL { get; set; }
         ITareaDAL tareaDAL { get; set; }
         IRecordatorioDAL recordatorioDAL { get; set; }
+        IEventoDAL eventoDAL { get; set; }
         bool Complete();
     }
 }
