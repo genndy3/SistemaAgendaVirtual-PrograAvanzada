@@ -16,11 +16,12 @@ namespace DAL.Implementations
         public ITareaDAL tareaDAL { get; set; }
         public IRecordatorioDAL recordatorioDAL { get; set; }
         public IEventoDAL eventoDAL { get; set; }
+        public IComentarioDAL comentarioDAL { get; set; }
 
         private AgendaVirtualContext _agendaVirtualContext;
 
         public UnidadDeTrabajo(AgendaVirtualContext agendaVirtualContext, IUsuarioDAL usuarioDAL, IEquipoDAL equipoDAL, IUsuarioEquipoDAL usuarioEquipoDAL, ITareaDAL tareaDAL,
-            IRecordatorioDAL recordatorioDAL, IEventoDAL eventoDAL)
+            IRecordatorioDAL recordatorioDAL, IEventoDAL eventoDAL, IComentarioDAL comentarioDAL)
         {
             this._agendaVirtualContext = agendaVirtualContext;
             this.usuarioDAL = usuarioDAL;
@@ -29,6 +30,7 @@ namespace DAL.Implementations
             this.tareaDAL = tareaDAL;
             this.recordatorioDAL = recordatorioDAL;
             this.eventoDAL = eventoDAL;
+            this.comentarioDAL = comentarioDAL;
         }
 
         public bool Complete()

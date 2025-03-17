@@ -14,6 +14,7 @@ namespace DAL.Interfaces
         ITareaDAL tareaDAL { get; set; }
         IRecordatorioDAL recordatorioDAL { get; set; }
         IEventoDAL eventoDAL { get; set; }
+        IComentarioDAL comentarioDAL { get; set; }
         bool Complete();
     }
 }

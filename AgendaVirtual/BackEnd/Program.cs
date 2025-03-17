@@ -41,6 +41,8 @@ builder.Services.AddScoped<IRecordatorioDAL, RecordatorioDAL>();
 builder.Services.AddScoped<IEventoService, EventoService>();
 builder.Services.AddScoped<IEventoDAL, EventoDAL>();
 
+builder.Services.AddScoped<IComentarioService, ComentarioService>();
+builder.Services.AddScoped<IComentarioDAL, ComentarioDAL>();
 
 #endregion
 
