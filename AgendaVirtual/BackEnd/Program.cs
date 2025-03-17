@@ -32,6 +32,9 @@ builder.Services.AddScoped<IEquipoDAL, EquipoDAL>();
 builder.Services.AddScoped<IUsuarioEquipoService, UsuarioEquipoService>();
 builder.Services.AddScoped<IUsuarioEquipoDAL, UsuarioEquipoDAL>();
 
+builder.Services.AddScoped<ITareaService, TareaService>();
+builder.Services.AddScoped<ITareaDAL, TareaDAL>();
+
 #endregion
 
 var app = builder.Build();
