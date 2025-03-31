@@ -46,10 +46,10 @@ namespace FrontEnd.Controllers
 
 
                         var claims = new List<Claim>()
-                         {
-                             new Claim(ClaimTypes.NameIdentifier, login.Username as string),
-                             new Claim(ClaimTypes.Name, login.Username as string),
-                         };
+                          {
+                              new Claim(ClaimTypes.NameIdentifier, login.Username as string),
+                              new Claim(ClaimTypes.Name, login.Username as string),
+                          };
                         var roles = login.Roles;
                         foreach (var role in roles)
                         {

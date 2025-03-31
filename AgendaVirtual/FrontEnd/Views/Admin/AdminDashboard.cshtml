@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Admin";
     Layout = null;
 }
 <!DOCTYPE html>
@@ -16,8 +16,9 @@
             min-height: 100vh;
         }
 
-        .content {
-            flex-grow: 1;
+        .icon-container {
+            text-align: center;
+            width: 200px; 
         }
 
         footer {
@@ -28,13 +29,10 @@
             color: white;
         }
 
-        .icon-container {
-            text-align: center;
-        }
-
         .icon-container img {
-            max-width: 100%;
-            height: auto;
+            width: 200px; 
+            height: 200px; 
+            object-fit: contain; 
         }
     </style>
 </head>
@@ -52,27 +50,28 @@
     <div class="d-flex justify-content-center">
         <div class="d-flex flex-row mb-3 p-3 align-items-center flex-wrap">
 
-            <div class="icon-container p-2" style="width: 200px; max-width: 100%; flex-shrink: 0;">
-                <img src="\img\tasks.png" class="img-fluid" alt="Tareas">
-                <hr />
-                <h5>Tareas</h5>
+            <div class="icon-container p-2">
+                <a href="@Url.Action("admUsuarios", "Admin")" style="text-decoration: none; color: inherit;">
+                    <img src="\img\user.png" alt="Usuarios">
+                    <h5>Usuarios</h5>
+                </a>
             </div>
 
-            <div class="icon-container p-2" style="width: 200px; max-width: 100%; flex-shrink: 0;">
-                <img src="\img\calendario.png" class="img-fluid" alt="Calendario">
-                <h5>Calendario</h5>
+            <div class="icon-container p-2">
+                <a href="@Url.Action("admEquipos", "Admin")" style="text-decoration: none; color: inherit;">
+                    <img src="\img\equipo.png" alt="Equipo">
+                    <h5>Equipos</h5>
+                </a>
             </div>
 
-            <div class="icon-container p-2" style="width: 200px; max-width: 100%; flex-shrink: 0;">
-                <img src="\img\equipo.png" class="img-fluid" alt="Equipo">
-                <h5>Equipos</h5>
+            <div class="icon-container p-2">
+                <a href="@Url.Action("admTareas", "Admin")" style="text-decoration: none; color: inherit;">
+                    <img src="\img\tasks.png" alt="Tareas">
+                    <h5>Tareas</h5>
+                </a>
             </div>
+
         </div>
-    </div>
-
-    <!-- PARA PRUEBAS ADMIN -->
-    <div class="text-center">
-        <a href="@Url.Action("AdminDashboard", "Admin")" class="btn btn-primary">Ir a Admin</a>
     </div>
 
     <footer class="text-center p-2" style="background-color: #162a6a; color: white;">
@@ -80,3 +79,4 @@
     </footer>
 </body>
 </html>
+
