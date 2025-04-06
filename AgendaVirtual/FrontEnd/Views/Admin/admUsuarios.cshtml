@@ -1,0 +1,408 @@
+﻿@{
+    ViewData["Title"] = "AdminUsuarios";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Usuarios - Timely</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .content {
+            flex-grow: 1;
+        }
+
+        footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background-color: #162a6a;
+            color: white;
+        }
+
+        .icon-container {
+            text-align: center;
+        }
+
+            .icon-container img {
+                max-width: 100%;
+                height: auto;
+                width: 20px;
+                margin: 0 10px;
+            }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+        }
+
+        .tab-container {
+            display: flex;
+            justify-content: flex-start;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .tab {
+            display: inline-block;
+            text-align: center;
+            margin-right: 50px;
+        }
+
+            .tab h3 {
+                margin-bottom: 0;
+                position: relative;
+                z-index: 2;
+                font-size: 18px;
+            }
+
+        .tabs-line {
+            display: block;
+            width: 100%;
+            height: 3px;
+            background-color: #233671;
+        }
+
+        .tab.active-tab .tab-line {
+            width: 100%;
+            height: 6px;
+            background-color: #233671;
+        }
+
+        .tab:not(.active-tab) .tab-line {
+            display: none;
+        }
+
+        th {
+            color: #233671;
+        }
+
+        tbody tr {
+            background-color: #f2f2f2;
+        }
+
+        td, th {
+            border: none;
+            padding: 8px;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+            .actions img {
+                width: 20px;
+                height: auto;
+                margin: 0 10px;
+                cursor: pointer;
+            }
+
+        .tab img {
+            width: 20px;
+            height: auto;
+            margin-left: 100px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 40%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1050;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            width: 100%;
+            padding: 20px;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+            .modal-header h3 {
+                font-size: 24px;
+                color: #233671;
+            }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+            .modal-body .form-group {
+                margin-bottom: 15px;
+            }
+
+                .modal-body .form-group input {
+                    width: 100%;
+                    padding: 10px;
+                    border-radius: 5px;
+                    border: 1px solid #ccc;
+                }
+
+        .modal-footer {
+            text-align: center;
+        }
+
+            .modal-footer button {
+                padding: 10px 15px;
+                border-radius: 5px;
+                font-size: 16px;
+                cursor: pointer;
+            }
+
+        .btn-cancelar {
+            background-color: white;
+            color: #233671;
+            border: 2px solid #233671;
+        }
+
+            .btn-cancelar:hover {
+                background-color: #233671;
+                color: white;
+                border: 2px solid #233671;
+            }
+
+        .btn-crear {
+            background-color: #233671;
+            color: white;
+            border: none;
+        }
+
+            .btn-crear:hover {
+                background-color: #0056b3;
+            }
+
+        .confirm-delete {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1051;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .confirm-delete-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+            .confirm-delete-content button {
+                padding: 10px 15px;
+                margin: 10px;
+                border-radius: 5px;
+            }
+
+        .btn-aceptar {
+            background-color: #233671;
+            color: white;
+            border: none;
+        }
+
+            .btn-aceptar:hover {
+                background-color: #0056b3;
+            }
+    </style>
+
+</head>
+<body>
+    <div class="d-flex flex-row mb-3 p-3 align-items-center flex-wrap">
+        <div class="p-2" style="width: 80px; max-width: 100%; flex-shrink: 0;">
+            <img src="\img\timely_logo.png" class="img-fluid" alt="Timely Logo">
+        </div>
+
+        <div class="p-2">
+            <h1 class="mt-2 text-center text-sm-start">TIMELY</h1>
+        </div>
+    </div>
+
+    <div class="container mt-5">
+        <div class="tab-container">
+            <div class="tab active-tab">
+                <a href="@Url.Action("admUsuarios", "Admin")" style="text-decoration: none; color: inherit;">
+                <h3>Usuarios</h3>
+                <div class="tab-line"></div>
+                </a>
+            </div>
+            <div class="tab">
+                <a href="@Url.Action("admEquipos", "Admin")" style="text-decoration: none; color: inherit;">
+                    <h3>Equipos</h3>
+                    <div class="tab-line"></div>
+                </a>
+            </div>
+            <div class="tab">
+                <a href="@Url.Action("admTareas", "Admin")" style="text-decoration: none; color: inherit;">
+                <h3>Tareas</h3>
+                <div class="tab-line"></div>
+                </a>
+            </div>
+            <img src="\img\crear.png" alt="Icono" style="width: 30px; height: auto;" onclick="openModal('create')" />
+        </div>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Correo Electrónico</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>adminMade</td>
+                    <td>Araya</td>
+                    <td>made@gmail.com</td>
+                    <td class="actions">
+                        <img src="\img\editar.png" alt="Editar" onclick="openModal('edit', 'adminMade')" />
+                        <img src="\img\eliminar.png" alt="Eliminar" onclick="showConfirmDelete('adminMade')" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>Ana</td>
+                    <td>López</td>
+                    <td>ana@gmail.com</td>
+                    <td class="actions">
+                        <img src="\img\editar.png" alt="Editar" onclick="openModal('edit', 'Ana')" />
+                        <img src="\img\eliminar.png" alt="Eliminar" onclick="showConfirmDelete('Ana')" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal Crear Usuario -->
+    <div class="modal" id="createModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Crear Usuario</h3>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="nombre">Nombre:</label>
+                    <input type="text" id="nombre" class="form-control" placeholder="Ingresa el nombre">
+                </div>
+                <div class="form-group">
+                    <label for="apellido">Apellido:</label>
+                    <input type="text" id="apellido" class="form-control" placeholder="Ingresa el apellido">
+                </div>
+                <div class="form-group">
+                    <label for="correo">Correo Electrónico:</label>
+                    <input type="email" id="correo" class="form-control" placeholder="Ingresa el correo electrónico">
+                </div>
+                <div class="form-group">
+                    <label for="contraseña">Contraseña:</label>
+                    <input type="password" id="contraseña" class="form-control" placeholder="Ingresa la contraseña">
+                </div>
+                <div class="form-group">
+                    <label for="confirmarContraseña">Confirmar Contraseña:</label>
+                    <input type="password" id="confirmarContraseña" class="form-control" placeholder="Confirma la contraseña">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancelar" onclick="closeModal('create')">Cancelar</button>
+                <button class="btn-crear" onclick="closeModal('create')">Crear</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal Editar Usuario -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Editar Usuario</h3>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="editNombre">Nombre:</label>
+                    <input type="text" id="editNombre" class="form-control" placeholder="Ingresa el nombre">
+                </div>
+                <div class="form-group">
+                    <label for="editApellido">Apellido:</label>
+                    <input type="text" id="editApellido" class="form-control" placeholder="Ingresa el apellido">
+                </div>
+                <div class="form-group">
+                    <label for="editCorreo">Correo Electrónico:</label>
+                    <input type="email" id="editCorreo" class="form-control" placeholder="Ingresa el correo electrónico">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancelar" onclick="closeModal('edit')">Cancelar</button>
+                <button class="btn-crear" onclick="closeModal('edit')">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ventana de confirmación de eliminación -->
+    <div class="confirm-delete" id="confirmDeleteModal">
+        <div class="confirm-delete-content">
+            <h3>¿Estás seguro de eliminar este usuario?</h3>
+            <button class="btn-cancelar" onclick="closeConfirmDelete()">Cancelar</button>
+            <button class="btn-aceptar" onclick="deleteUser()">Aceptar</button>
+        </div>
+    </div>
+
+    <footer class="text-center p-2" style="background-color: #162a6a; color: white;">
+        <p>&copy; 2025 - Derechos Reservados</p>
+    </footer>
+
+    <script>
+        function openModal(type, userName = '') {
+            if (type === 'create') {
+                document.getElementById('createModal').style.display = 'flex';
+            } else if (type === 'edit') {
+                document.getElementById('editModal').style.display = 'flex';
+            }
+        }
+
+        function closeModal(type) {
+            if (type === 'create') {
+                document.getElementById('createModal').style.display = 'none';
+            } else if (type === 'edit') {
+                document.getElementById('editModal').style.display = 'none';
+            }
+        }
+
+        function showConfirmDelete(userName) {
+            document.getElementById('confirmDeleteModal').style.display = 'flex';
+        }
+
+        function closeConfirmDelete() {
+            document.getElementById('confirmDeleteModal').style.display = 'none';
+        }
+
+        function deleteUser() {
+            alert('Usuario eliminado');
+            closeConfirmDelete();
+        }
+    </script>
+</body>
+</html>

@@ -9,5 +9,7 @@ namespace DAL.Interfaces
 {
     public interface IUsuarioDAL : IDALGenerico<Usuario>
     {
+        public bool UpdateSP(Usuario usuario);
+        public bool DeleteSP(Usuario usuario);
     }
 }

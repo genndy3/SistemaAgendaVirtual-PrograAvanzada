@@ -1,4 +1,5 @@
-﻿using BackEnd.DTO;
+﻿using System.Diagnostics;
+using BackEnd.DTO;
 using BackEnd.Services.Interfaces;
 using DAL.Interfaces;
 using Entities.Entities;
@@ -47,9 +48,24 @@ namespace BackEnd.Services.Implementations
         public UsuarioDTO Delete(int id)
         {
             Usuario usuario = new Usuario { IdUsuario = id };
-            _unidadDeTrabajo.usuarioDAL.Remove(usuario);
-            _unidadDeTrabajo.Complete();
-            return Convertir(usuario);
+            try
+            {
+                bool deleteSuccess = _unidadDeTrabajo.usuarioDAL.DeleteSP(usuario);
+                if (!deleteSuccess)
+                {
+                    throw new Exception("No se pudo eliminar el usuario con el SP.");
+                }
+
+                _unidadDeTrabajo.usuarioDAL.Remove(usuario);
+                _unidadDeTrabajo.Complete();
+
+                return Convertir(usuario);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error al eliminar usuario: {ex.Message}");
+                throw;
+            }
         }
 
         public List<UsuarioDTO> GetAll()
@@ -73,6 +89,7 @@ namespace BackEnd.Services.Implementations
         {
             _unidadDeTrabajo.usuarioDAL.Update(Convertir(usuarioDTO));
             _unidadDeTrabajo.Complete();
+            _unidadDeTrabajo.usuarioDAL.UpdateSP(Convertir(usuarioDTO));
             return usuarioDTO;
         }
     }
