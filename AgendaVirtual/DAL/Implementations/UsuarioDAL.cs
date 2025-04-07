@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using DAL.Interfaces;
 using Entities.Entities;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,8 +18,7 @@ namespace DAL.Implementations
         {
             _context = context;
         }
-
-
+        
         public bool UpdateSP(Usuario usuario)
         {
             try
@@ -29,6 +27,7 @@ namespace DAL.Implementations
 
                 var param = new SqlParameter[]
                 {
+
                 new SqlParameter()
                 {
                     ParameterName = "@id_usuario",
@@ -75,6 +74,7 @@ namespace DAL.Implementations
 
                 var param = new SqlParameter[]
                 {
+
             new SqlParameter()
             {
                 ParameterName = "@id_usuario",
@@ -93,7 +93,6 @@ namespace DAL.Implementations
                 return false;
             }
         }
-
 
     }
 }
