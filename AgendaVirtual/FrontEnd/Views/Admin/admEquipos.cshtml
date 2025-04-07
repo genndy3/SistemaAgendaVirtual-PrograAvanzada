@@ -1,4 +1,6 @@
-﻿@{
+﻿@model IEnumerable<FrontEnd.Models.EquipoViewModel>
+
+@{
     ViewData["Title"] = "AdminEquipos";
     Layout = null;
 }
@@ -268,64 +270,76 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>Nombre</th>
-                    <th>Equipo</th>
-                    <th>Descripción</th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.IdEquipo)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Nombre)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Descripcion)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.FechaCreacion)
+                    </th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
+             @foreach (var item in Model){
                 <tr>
-                    <td>Equipo 1</td>
-                    <td>Soporte</td>
-                    <td>Equipo de soporte técnico</td>
-                    <td class="actions">
-                        <img src="\img\editar.png" alt="Editar" onclick="openModal('edit', 'Equipo1')" />
-                        <img src="\img\eliminar.png" alt="Eliminar" onclick="showConfirmDelete('Equipo1')" />
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IdEquipo)
                     </td>
-                </tr>
-                <tr>
-                    <td>Equipo 2</td>
-                    <td>Desarrollo</td>
-                    <td>Equipo de desarrollo de software</td>
-                    <td class="actions">
-                        <img src="\img\editar.png" alt="Editar" onclick="openModal('edit', 'Equipo2')" />
-                        <img src="\img\eliminar.png" alt="Eliminar" onclick="showConfirmDelete('Equipo2')" />
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Nombre)
                     </td>
-                </tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Descripcion)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FechaCreacion)
+                    </td>
+                        <td class="actions">
+                            <img src="\img\editar.png" alt="Editar" onclick="openModal('edit', 'adminMade')" />
+                            <img src="\img\eliminar.png" alt="Eliminar" onclick="showConfirmDelete('adminMade')" />
+                        </td>
+                 </tr>
+             }
             </tbody>
         </table>
     </div>
 
-    <!-- Modal Crear Equipo -->
-    <div class="modal" id="createModal">
+    <!-- Modal Editar Equipo -->
+    <div class="modal" id="editModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Crear Equipo</h3>
+                <h3>Editar Equipo</h3>
             </div>
             <div class="modal-body">
                 <div class="form-group">
                     <label for="nombre">Nombre:</label>
-                    <input type="text" id="nombre" class="form-control" placeholder="Ingresa el nombre">
+                    <input type="text" id="editNombre" class="form-control" placeholder="Ingresa el nombre">
                 </div>
                 <div class="form-group">
                     <label for="descripcion">Descripción:</label>
-                    <input type="text" id="descripcion" class="form-control" placeholder="Ingresa la descripción">
+                    <input type="text" id="editDescripcion" class="form-control" placeholder="Ingresa la descripción">
                 </div>
                 <div class="form-group">
-                <label for="integrantes">Seleccionar Integrantes:</label>
-                <select id="integrantes" class="form-control" multiple>
-                    <option value="integrante1">Juan Perez</option>
-                    <option value="integrante2">Maria Marin</option>
-                </select>
+                    <label for="integrantes">Seleccionar Integrantes:</label>
+                    <select id="editIntegrantes" class="form-control" multiple>
+                        <option value="integrante1">Juan Perez</option>
+                        <option value="integrante2">Maria Marin</option>
+                    </select>
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn-cancelar" onclick="closeModal('create')">Cancelar</button>
-                <button class="btn-crear" onclick="closeModal('create')">Crear</button>
+                <button class="btn-cancelar" onclick="closeModal('edit')">Cancelar</button>
+                <button class="btn-crear" onclick="closeModal('edit')">Guardar</button>
             </div>
         </div>
     </div>
+
 
     <!-- Modal Editar Equipo -->
     <div class="modal" id="editModal">
@@ -376,6 +390,22 @@
     </footer>
 
     <script>
+
+                function openModal(type, equipoId = '') {
+            if (type === 'create') {
+                document.getElementById('createModal').style.display = 'flex';
+            } else if (type === 'edit' && equipoId !== '') {
+                // Asumiendo que 'equipoId' tiene los valores de equipo seleccionados
+                // Aquí debes recuperar los detalles del equipo y asignarlos a los inputs
+                document.getElementById('editModal').style.display = 'flex';
+
+                // Asignar los valores de los campos en el modal de edición
+                document.getElementById('editNombre').value = equipoId.Nombre; // Cambiar esto para obtener los valores correctos
+                document.getElementById('editDescripcion').value = equipoId.Descripcion;
+                // Llenar el campo de integrantes según sea necesario
+            }
+        }
+
         function openModal(type, equipo = '') {
             if (type === 'create') {
                 document.getElementById('createModal').style.display = 'flex';

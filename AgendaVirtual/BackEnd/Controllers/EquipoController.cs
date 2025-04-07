@@ -14,14 +14,15 @@ namespace BackEnd.Controllers
         IEquipoService _equipoService;
         public EquipoController(IEquipoService equipoService)
         {
-            _equipoService = equipoService;
+            this._equipoService = equipoService;
         }
 
         // GET: api/<EquipoController>
         [HttpGet]
         public ActionResult Get()
         {
-            return Ok(_equipoService.GetAll());
+            var result = _equipoService.GetEquipo();
+            return Ok(result);
         }
 
         // GET api/<EquipoController>/5
@@ -31,12 +32,7 @@ namespace BackEnd.Controllers
             return Ok(_equipoService.Get(id));
         }
 
-        // POST api/<EquipoController>
-        [HttpPost]
-        public void Post([FromBody] EquipoDTO equipo)
-        {
-            _equipoService.Add(equipo);
-        }
+
 
         // PUT api/<EquipoController>/5
         [HttpPut]

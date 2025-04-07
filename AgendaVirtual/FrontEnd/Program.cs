@@ -20,6 +20,10 @@ builder.Services.AddHttpClient<IServiceRepository, ServiceRepository>();
 builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
 builder.Services.AddScoped<ISecurityHelper, SecurityHelper>();
 
+builder.Services.AddScoped<IUsuarioHelper, UsuarioHelper>();
+builder.Services.AddScoped<IEquipoHelper, EquipoHelper>();
+builder.Services.AddScoped<ITareaHelper, TareaHelper>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -31,6 +35,9 @@ app.UseStaticFiles();
 
 app.UseRouting();
 app.UseSession();
+app.UseAuthentication();  
+
+
 app.UseAuthorization();
 
 app.MapControllerRoute(

@@ -8,6 +8,6 @@ namespace BackEnd.Services.Interfaces
         List<TareaDTO> GetAll();
         TareaDTO Add(TareaDTO tareaDTO);
         TareaDTO Update(TareaDTO tareaDTO);
-        TareaDTO Delete(int id);
+        void Delete(int id);
     }
 }
