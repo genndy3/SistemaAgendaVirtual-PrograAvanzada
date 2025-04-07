@@ -10,20 +10,20 @@ namespace BackEnd.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class TareaController : ControllerBase
     {
         ITareaService _tareaService;
         public TareaController(ITareaService tareaService)
         {
-            _tareaService = tareaService;
+            this._tareaService = tareaService;
         }
 
         // GET: api/<TareaController>
         [HttpGet]
         public ActionResult Get()
         {
-            return Ok(_tareaService.GetAll());
+            var result = _tareaService.GetAll();
+            return Ok(result); 
         }
 
         // GET api/<TareaController>/5

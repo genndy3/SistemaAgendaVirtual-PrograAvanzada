@@ -36,11 +36,11 @@ namespace BackEnd.Services.Implementations
             };
         }
 
-        public EquipoDTO Add(EquipoDTO equipoDTO)
+        public void AddEquipo(EquipoDTO equipo)
         {
-            _unidadDeTrabajo.equipoDAL.Add(Convertir(equipoDTO));
+           var categoryEntity = Convertir(equipo);
+            _unidadDeTrabajo.equipoDAL.Add(categoryEntity);
             _unidadDeTrabajo.Complete();
-            return equipoDTO;
         }
 
         public EquipoDTO Delete(int id)
@@ -57,7 +57,7 @@ namespace BackEnd.Services.Implementations
             return Convertir(equipo);
         }
 
-        public List<EquipoDTO> GetAll()
+        public List<EquipoDTO> GetEquipo()
         {
             var equipos = _unidadDeTrabajo.equipoDAL.GetAll();
             List<EquipoDTO> equiposDTO = new List<EquipoDTO>();
@@ -74,5 +74,6 @@ namespace BackEnd.Services.Implementations
             _unidadDeTrabajo.Complete();
             return equipoDTO;
         }
+
     }
 }

@@ -1,16 +1,13 @@
-﻿using Entities.Entities;
-using System.ComponentModel.DataAnnotations;
-
-namespace BackEnd.DTO
+﻿namespace FrontEnd.Models
 {
-    public class TareaDTO
+    public class TareaViewModel
     {
         public int IdTarea { get; set; }
-        [Required]
+
         public int IdUsuario { get; set; }
-        [Required]
+        public IEnumerable<UsuarioViewModel> Usuarios { get; set; } 
         public int? IdEquipo { get; set; }
-        [Required]
+        public IEnumerable<EquipoViewModel> Equipos { get; set; }
         public string Titulo { get; set; } = null!;
 
         public string? Descripcion { get; set; }
@@ -20,5 +17,6 @@ namespace BackEnd.DTO
         public string Prioridad { get; set; } = null!;
 
         public string Estado { get; set; } = null!;
+
     }
 }
