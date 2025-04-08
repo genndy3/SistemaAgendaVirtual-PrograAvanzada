@@ -91,5 +91,21 @@ namespace DAL.Implementations
                 return false;
             }
         }
+
+
+        public int GetIdUser(string id)
+        {
+            try
+            {
+                var usuario = _context.Usuarios.FirstOrDefault(u => u.IdIdentity == id);
+                return usuario?.IdUsuario ?? 0;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error al ejecutar la consulta: {ex.Message}");
+                return 0;
+            }
+        }
+
     }
 }

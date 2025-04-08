@@ -19,6 +19,7 @@ builder.Services.AddSession();
 builder.Services.AddHttpClient<IServiceRepository, ServiceRepository>();
 builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
 builder.Services.AddScoped<ISecurityHelper, SecurityHelper>();
+builder.Services.AddScoped<ITareaHelper, TareaHelper>();
 
 var app = builder.Build();
 

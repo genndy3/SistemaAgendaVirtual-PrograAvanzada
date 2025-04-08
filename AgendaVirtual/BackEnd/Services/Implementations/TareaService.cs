@@ -83,5 +83,27 @@ namespace BackEnd.Services.Implementations
             _unidadDeTrabajo.Complete();
             return tareaDTO;
         }
+
+        public List<TareaDTO> GetAllByUser(int idUsuario)
+        {
+            var tareas = _unidadDeTrabajo.tareaDAL.getAllByUser(idUsuario);
+            List<TareaDTO> tareasDTO = new List<TareaDTO>();
+            foreach (var tarea in tareas)
+            {
+                tareasDTO.Add(Convertir(tarea));
+            }
+            return tareasDTO;
+        }
+
+        public List<TareaDTO> GetAllByEquipoAndUser(int idUsuario)
+        {
+            var tareas = _unidadDeTrabajo.tareaDAL.getAllByEquipoAndUser(idUsuario);
+            List<TareaDTO> tareasDTO = new List<TareaDTO>();
+            foreach (var tarea in tareas)
+            {
+                tareasDTO.Add(Convertir(tarea));
+            }
+            return tareasDTO;
+        }
     }
 }
