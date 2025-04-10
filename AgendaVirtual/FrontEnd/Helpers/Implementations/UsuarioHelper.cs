@@ -26,7 +26,6 @@ namespace FrontEnd.Helpers.Implementations
                 FechaRegistro = usuario.FechaRegistro
             };
         }
-        
         UsuarioAPI Convertir(UsuarioViewModel usuario)
         {
             return new UsuarioAPI
@@ -39,7 +38,6 @@ namespace FrontEnd.Helpers.Implementations
                 FechaRegistro = usuario.FechaRegistro
             };
         }
-
         public UsuarioViewModel AddUsuario(UsuarioViewModel usuario)
         {
             HttpResponseMessage responseMessage = _repository.PostResponse("api/usuario", Convertir(usuario));
@@ -48,20 +46,21 @@ namespace FrontEnd.Helpers.Implementations
                 var content = responseMessage.Content;
             }
 
+
             return usuario;
         }
 
         public List<UsuarioViewModel> GetAll()
         {
-            List<UsuarioAPI> usuarios = new List<UsuarioAPI>();
-            HttpResponseMessage responseMessage = _repository.GetResponse("api/usuario");
+           List<UsuarioAPI> usuarios = new List<UsuarioAPI>();
+           HttpResponseMessage responseMessage = _repository.GetResponse("api/usuario");
+
 
             if (responseMessage != null)
             {
                 var content = responseMessage.Content.ReadAsStringAsync().Result;
                 usuarios = JsonConvert.DeserializeObject<List<UsuarioAPI>>(content);
             }
-
             List<UsuarioViewModel> list = new List<UsuarioViewModel>();
             foreach (var item in usuarios)
             {
@@ -69,20 +68,7 @@ namespace FrontEnd.Helpers.Implementations
             }
 
             return list;
-        }
 
-        public UsuarioViewModel GetById(int id)
-        {
-            UsuarioAPI usuario = new UsuarioAPI();
-            HttpResponseMessage responseMessage = _repository.GetResponse("api/Usuario/" + id.ToString());
-
-            if (responseMessage != null)
-            {
-                var content = responseMessage.Content.ReadAsStringAsync().Result;
-                usuario = JsonConvert.DeserializeObject<UsuarioAPI>(content);
-            }
-
-            return Convertir(usuario);
         }
 
         public UsuarioViewModel UpdateUsuario(UsuarioViewModel usuario)
@@ -95,9 +81,22 @@ namespace FrontEnd.Helpers.Implementations
             return usuario;
         }
 
+        public UsuarioViewModel GetById(int id)
+        {
+            UsuarioAPI usuario = new UsuarioAPI();
+            HttpResponseMessage responseMessage = _repository.GetResponse("api/Usuario/" + id.ToString());
+
+            if (responseMessage != null)
+            {
+                var content = responseMessage.Content.ReadAsStringAsync().Result;
+                usuario = JsonConvert.DeserializeObject<UsuarioAPI>(content);
+            }
+            return Convertir(usuario);
+        }
+
         void IUsuarioHelper.DeleteUsuario(int id)
         {
             throw new NotImplementedException();
         }
     }
-}
+    }

@@ -3,6 +3,8 @@ using BackEnd.Services.Implementations;
 using BackEnd.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
+// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+
 namespace BackEnd.Controllers
 {
     [Route("api/[controller]")]
@@ -30,13 +32,7 @@ namespace BackEnd.Controllers
             return Ok(_equipoService.Get(id));
         }
 
-        // POST api/<EquipoController>
-        [HttpPost]
-        public EquipoDTO Post([FromBody] EquipoDTO equipo)
-        {
-            EquipoDTO newEquipo = _equipoService.Add(equipo);
-            return newEquipo;
-        }
+
 
         // PUT api/<EquipoController>/5
         [HttpPut]
@@ -50,30 +46,6 @@ namespace BackEnd.Controllers
         public void Delete(int id)
         {
             _equipoService.Delete(id);
-        }
-
-        [HttpGet("Usuario/{idUsuario}")]
-        public ActionResult GetAllByUser(int idUsuario)
-        {
-            return Ok(_equipoService.GetAllByUser(idUsuario));
-        }
-
-        [HttpGet("Equipo/{idEquipo}")]
-        public ActionResult GetUsuariosByEquipo(int idEquipo)
-        {
-            return Ok(_equipoService.GetUsuariosByEquipo(idEquipo));
-        }
-
-        [HttpGet("UsuariosNotIn/{idEquipo}")]
-        public ActionResult GetUsuariosNotInEquipo(int idEquipo)
-        {
-            return Ok(_equipoService.GetUsuariosNotIntEquipo(idEquipo));
-        }
-
-        [HttpGet("EquipoPorUsuario/{idUsuario}")]
-        public ActionResult GetEquipoPorUsuario(int idUsuario)
-        {
-            return Ok(_equipoService.GetEquipoPorUsuario(idUsuario));
         }
     }
 }

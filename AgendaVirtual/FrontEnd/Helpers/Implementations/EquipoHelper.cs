@@ -2,167 +2,85 @@
 using FrontEnd.Helpers.Interfaces;
 using FrontEnd.Models;
 using Newtonsoft.Json;
-using System.Net.Http.Headers;
+using System.Security.Cryptography.Xml;
 
 namespace FrontEnd.Helpers.Implementations
 {
     public class EquipoHelper : IEquipoHelper
     {
-        private readonly IServiceRepository _serviceRepository;
-        public string Token { get; set; }
+        IServiceRepository _repository;
 
-        public EquipoHelper(IServiceRepository serviceRepository)
+        public EquipoHelper(IServiceRepository repository)
         {
-            _serviceRepository = serviceRepository;
+            _repository = repository;
         }
 
-        private EquipoViewModel Convertir(EquipoAPI equipo) =>
-            new EquipoViewModel
+        EquipoViewModel Convertir (EquipoAPI equipo)
+        {
+            return new EquipoViewModel
             {
                 IdEquipo = equipo.IdEquipo,
                 Nombre = equipo.Nombre,
                 Descripcion = equipo.Descripcion,
                 FechaCreacion = equipo.FechaCreacion
             };
+        }
 
-        private UsuarioViewModel Convertir(UsuarioAPI usuario) =>
-            new UsuarioViewModel
-            {
-                IdUsuario = usuario.IdUsuario,
-                Nombre = usuario.Nombre
-            };
-
-        private EquipoAPI Convertir(EquipoViewModel equipo) =>
-            new EquipoAPI
+        EquipoAPI Convertir(EquipoViewModel equipo)
+        {
+            return new EquipoAPI
             {
                 IdEquipo = equipo.IdEquipo,
                 Nombre = equipo.Nombre,
                 Descripcion = equipo.Descripcion,
                 FechaCreacion = equipo.FechaCreacion
             };
-
-        public List<EquipoViewModel> getEquipos()
-        {
-            _serviceRepository.Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token);
-            HttpResponseMessage response = _serviceRepository.GetResponse("api/equipo");
-
-            List<EquipoAPI> equipos = new();
-            if (response.IsSuccessStatusCode)
-            {
-                string content = response.Content.ReadAsStringAsync().Result;
-                equipos = JsonConvert.DeserializeObject<List<EquipoAPI>>(content)!;
-            }
-
-            return equipos.Select(Convertir).ToList();
         }
 
-        public List<EquipoViewModel> getEquiposPorUsuario(int usuarioId)
+        public EquipoViewModel Add(EquipoViewModel equipo)
         {
-            _serviceRepository.Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token);
-            HttpResponseMessage response = _serviceRepository.GetResponse($"api/Equipo/Usuario/{usuarioId}");
-
-            List<EquipoAPI> equipos = new();
+            HttpResponseMessage response = _repository.PostResponse("api/equipo", equipo);
             if (response.IsSuccessStatusCode)
             {
-                string content = response.Content.ReadAsStringAsync().Result;
-                equipos = JsonConvert.DeserializeObject<List<EquipoAPI>>(content)!;
+
+                var content = response.Content.ReadAsStringAsync().Result;
             }
-
-            return equipos.Select(Convertir).ToList();
-        }
-
-        public List<UsuarioViewModel> getUsuariosPorEquipo(int equipoId)
-        {
-            _serviceRepository.Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token);
-            HttpResponseMessage response = _serviceRepository.GetResponse($"api/Equipo/Equipo/{equipoId}");
-
-            List<UsuarioAPI> usuarios = new();
-            if (response.IsSuccessStatusCode)
-            {
-                string content = response.Content.ReadAsStringAsync().Result;
-                usuarios = JsonConvert.DeserializeObject<List<UsuarioAPI>>(content)!;
-            }
-
-            return usuarios.Select(Convertir).ToList();
-        }
-
-        public List<UsuarioViewModel> getUsuariosNotInEquipo(int equipoId)
-        {
-            _serviceRepository.Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token);
-            HttpResponseMessage response = _serviceRepository.GetResponse($"api/Equipo/UsuariosNotIn/{equipoId}");
-
-            List<UsuarioAPI> usuarios = new();
-            if (response.IsSuccessStatusCode)
-            {
-                string content = response.Content.ReadAsStringAsync().Result;
-                usuarios = JsonConvert.DeserializeObject<List<UsuarioAPI>>(content)!;
-            }
-
-            return usuarios.Select(Convertir).ToList();
-        }
-
-        public EquipoViewModel getEquipo(int id)
-        {
-            _serviceRepository.Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token);
-            HttpResponseMessage response = _serviceRepository.GetResponse($"api/equipo/{id}");
-
-            EquipoAPI equipo = new();
-            if (response.IsSuccessStatusCode)
-            {
-                string content = response.Content.ReadAsStringAsync().Result;
-                equipo = JsonConvert.DeserializeObject<EquipoAPI>(content)!;
-            }
-
-            return Convertir(equipo);
-        }
-
-        public EquipoViewModel addEquipo(EquipoViewModel equipo)
-        {
-            _serviceRepository.Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token);
-            HttpResponseMessage response = _serviceRepository.PostResponse("api/equipo", equipo);
-
-            if (response.IsSuccessStatusCode)
-            {
-                string content = response.Content.ReadAsStringAsync().Result;
-                equipo = JsonConvert.DeserializeObject<EquipoViewModel>(content)!;
-            }
-
             return equipo;
         }
 
-        public EquipoViewModel updateEquipo(EquipoViewModel equipo)
+        public void DeleteEquipo(int id)
         {
-            _serviceRepository.Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token);
-            HttpResponseMessage response = _serviceRepository.PutResponse("api/equipo", equipo);
-
-            if (response.IsSuccessStatusCode)
-            {
-                string content = response.Content.ReadAsStringAsync().Result;
-                equipo = JsonConvert.DeserializeObject<EquipoViewModel>(content)!;
-            }
-
-            return equipo;
+            throw new NotImplementedException();
         }
 
-        public void deleteEquipo(int id)
+        public EquipoViewModel EditEquipo(EquipoViewModel EquipoViewModel)
         {
-            _serviceRepository.Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token);
-            _serviceRepository.DeleteResponse($"api/equipo/{id}");
+            throw new NotImplementedException();
         }
 
-        public EquipoViewModel GetEquipoPorUsuario(int usuarioId)
+        public EquipoViewModel GetById(int id)
         {
-            _serviceRepository.Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token);
-            HttpResponseMessage response = _serviceRepository.GetResponse($"api/Equipo/EquipoPorUsuario/{usuarioId}");
+            throw new NotImplementedException();
+        }
 
-            EquipoAPI equipo = new();
-            if (response.IsSuccessStatusCode)
+        public List<EquipoViewModel> GetEquipos()
+        {
+            List<EquipoAPI> equipos = new List<EquipoAPI>();
+            HttpResponseMessage responseMessage = _repository.GetResponse("api/equipo");
+
+            if (responseMessage != null)
             {
-                string content = response.Content.ReadAsStringAsync().Result;
-                equipo = JsonConvert.DeserializeObject<EquipoAPI>(content)!;
+                var content = responseMessage.Content.ReadAsStringAsync().Result;
+                equipos = JsonConvert.DeserializeObject<List<EquipoAPI>>(content);
             }
 
-            return Convertir(equipo);
+            List<EquipoViewModel> list = new List<EquipoViewModel>();
+
+            foreach (var item in equipos)
+            {
+                list.Add(Convertir(item));
+            }
+            return list;
         }
     }
 }
