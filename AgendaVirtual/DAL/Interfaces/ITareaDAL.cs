@@ -9,7 +9,5 @@ namespace DAL.Interfaces
 {
     public interface ITareaDAL : IDALGenerico<Tarea>
     {
-        public IEnumerable<Tarea> getAllByUser(int idUsuario);
-        public IEnumerable<Tarea> getAllByEquipoAndUser(int idUsuario);
     }
 }

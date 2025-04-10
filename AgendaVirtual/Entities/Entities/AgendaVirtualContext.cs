@@ -218,10 +218,6 @@ public partial class AgendaVirtualContext : DbContext
                 .HasMaxLength(20)
                 .IsUnicode(false)
                 .HasColumnName("rol");
-            entity.Property(e => e.IdIdentity)
-            .HasMaxLength(450)
-            .IsUnicode(false)
-            .HasColumnName("id_identity");
         });
 
         modelBuilder.Entity<UsuarioEquipo>(entity =>

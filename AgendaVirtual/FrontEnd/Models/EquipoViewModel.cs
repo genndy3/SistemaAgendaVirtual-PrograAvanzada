@@ -9,11 +9,5 @@
         public string? Descripcion { get; set; }
 
         public DateTime? FechaCreacion { get; set; }
-
-        public List<UsuarioViewModel>? ParticipanteList { get; set; }
-
-        public string ParticipanteId { get; set; } = null!;
-
-        public string? ParticipanteNombre { get; set; }
     }
 }
