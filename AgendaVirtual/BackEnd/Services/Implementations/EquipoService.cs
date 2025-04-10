@@ -3,6 +3,7 @@ using BackEnd.Services.Interfaces;
 using DAL.Implementations;
 using DAL.Interfaces;
 using Entities.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace BackEnd.Services.Implementations
 {
@@ -36,11 +37,23 @@ namespace BackEnd.Services.Implementations
             };
         }
 
+        UsuarioDTO convertirUsuario(Usuario usuario)
+        {
+            return new UsuarioDTO
+            {
+                IdUsuario = usuario.IdUsuario,
+                Nombre = usuario.Nombre,
+                Correo = usuario.Correo,
+                FechaRegistro = usuario.FechaRegistro,
+                Rol = usuario.Rol
+            };
+        }
+
         public EquipoDTO Add(EquipoDTO equipoDTO)
         {
-            _unidadDeTrabajo.equipoDAL.Add(Convertir(equipoDTO));
+            Equipo nuevoEquipo = _unidadDeTrabajo.equipoDAL.agregarEquipo(Convertir(equipoDTO));
             _unidadDeTrabajo.Complete();
-            return equipoDTO;
+            return Convertir(nuevoEquipo);
         }
 
         public EquipoDTO Delete(int id)
@@ -74,5 +87,49 @@ namespace BackEnd.Services.Implementations
             _unidadDeTrabajo.Complete();
             return equipoDTO;
         }
+
+        public List<EquipoDTO> GetAllByUser(int idUsuario)
+        {
+            var equipos = _unidadDeTrabajo.equipoDAL.GetAllByUser(idUsuario);
+            List<EquipoDTO> equiposDTO = new List<EquipoDTO>();
+
+            foreach (var equipo in equipos)
+            {
+                equiposDTO.Add(Convertir(equipo));
+            }
+
+            return equiposDTO;
+        }
+
+        public List<UsuarioDTO> GetUsuariosByEquipo(int idEquipo)
+        {
+            var usuarios = _unidadDeTrabajo.equipoDAL.GetUsuariosByEquipo(idEquipo);
+            List<UsuarioDTO> usuariosDTO = new List<UsuarioDTO>();
+
+            foreach (var usuario in usuarios)
+            {
+                usuariosDTO.Add(convertirUsuario(usuario));
+            }
+
+            return usuariosDTO;
+        }
+
+        public List<UsuarioDTO> GetUsuariosNotIntEquipo(int idEquipo)
+        {
+            var usuarios = _unidadDeTrabajo.equipoDAL.GetUsuariosNotInEquipo(idEquipo);
+            List<UsuarioDTO> usuariosDTO = new List<UsuarioDTO>();
+            foreach (var usuario in usuarios)
+            {
+                usuariosDTO.Add(convertirUsuario(usuario));
+            }
+            return usuariosDTO;
+        }
+
+        public EquipoDTO GetEquipoPorUsuario(int idUsuario)
+        {
+            var equipo = _unidadDeTrabajo.equipoDAL.GetEquipoByUsuario(idUsuario);
+            return Convertir(equipo);
+        }
+
     }
 }

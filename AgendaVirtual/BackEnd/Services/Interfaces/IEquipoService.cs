@@ -9,5 +9,9 @@ namespace BackEnd.Services.Interfaces
         EquipoDTO Add(EquipoDTO equipoDTO);
         EquipoDTO Update(EquipoDTO equipoDTO);
         EquipoDTO Delete(int id);
+        List<EquipoDTO> GetAllByUser(int idUsuario);
+        List<UsuarioDTO> GetUsuariosByEquipo(int idEquipo);
+        List<UsuarioDTO> GetUsuariosNotIntEquipo(int idEquipo);
+        EquipoDTO GetEquipoPorUsuario(int idUsuario);
     }
 }

@@ -33,9 +33,10 @@ namespace BackEnd.Controllers
 
         // POST api/<EquipoController>
         [HttpPost]
-        public void Post([FromBody] EquipoDTO equipo)
+        public EquipoDTO Post([FromBody] EquipoDTO equipo)
         {
-            _equipoService.Add(equipo);
+            EquipoDTO newEquipo = _equipoService.Add(equipo);
+            return newEquipo;
         }
 
         // PUT api/<EquipoController>/5
@@ -50,6 +51,30 @@ namespace BackEnd.Controllers
         public void Delete(int id)
         {
             _equipoService.Delete(id);
+        }
+
+        [HttpGet("Usuario/{idUsuario}")]
+        public ActionResult GetAllByUser(int idUsuario)
+        {
+            return Ok(_equipoService.GetAllByUser(idUsuario));
+        }
+
+        [HttpGet("Equipo/{idEquipo}")]
+        public ActionResult GetUsuariosByEquipo(int idEquipo)
+        {
+            return Ok(_equipoService.GetUsuariosByEquipo(idEquipo));
+        }
+
+        [HttpGet("UsuariosNotIn/{idEquipo}")]
+        public ActionResult GetUsuariosNotInEquipo(int idEquipo)
+        {
+            return Ok(_equipoService.GetUsuariosNotIntEquipo(idEquipo));
+        }
+
+        [HttpGet("EquipoPorUsuario/{idUsuario}")]
+        public ActionResult GetEquipoPorUsuario(int idUsuario)
+        {
+            return Ok(_equipoService.GetEquipoPorUsuario(idUsuario));
         }
     }
 }

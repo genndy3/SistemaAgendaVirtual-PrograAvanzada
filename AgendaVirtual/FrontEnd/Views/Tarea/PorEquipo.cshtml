@@ -73,7 +73,7 @@
 
         tr {
             color: #233671;
-            align-content:center;
+            align-content: center;
             align-items: center;
         }
 
@@ -311,7 +311,7 @@
                     @if (!Model.Any())
                     {
                         <tr>
-                            <td colspan="4" class="text-center">No hay tareas del equipo.</td>
+                            <td colspan="4" class="text-center">No hay tareas personales.</td>
                         </tr>
                     }
                     else
@@ -346,7 +346,7 @@
                                         <span class="estado-badge estado-cancelado">Cancelada</span>
                                     }
                                 </td>
-                                <td class="actions align-items-center ">
+                                <td class="actions">
                                     <img src="\img\editar.png" alt="Editar" onclick="cargarTarea(@item.IdTarea)" style="cursor:pointer;" />
                                     <form asp-action="DeleteConfirmed" method="post" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta tarea?');">
                                         <input type="hidden" name="id" value="@item.IdTarea" />
@@ -354,6 +354,7 @@
                                             <img src="\img\eliminar.png" alt="Eliminar" />
                                         </button>
                                     </form>
+
                                 </td>
                             </tr>
                         }
@@ -373,7 +374,7 @@
                            class="form-control border-blue rounded-0 shadow-none"
                            placeholder="Título">
                     <input type="hidden" id="idTarea">
-                    <input type="hidden" id="idUsuario">
+                    <input type="hidden" id="idUsuario" value="@ViewBag.IdUsuario">
                     <input type="hidden" id="idEquipo">
                 </div>
                 <div class="form-group mt-4">
@@ -382,7 +383,7 @@
                 </div>
                 <div class="form-group mt-4 d-flex justify-content-start">
                     <label for="fechaLimite" class="label-espaciado text-blue w-25">Fecha Límite</label>
-                    <input type="date" id="fechaLimite" class="form-control w-25 tarea-bg">
+                    <input type="datetime-local" id="fechaLimite" class="form-control w-25 tarea-bg">
                 </div>
                 <div class="form-group mt-4 d-flex justify-content-start">
                     <label for="estadoTarea" class="label-espaciado w-25 text-blue">Estado</label>
@@ -437,16 +438,18 @@
 </body>
 
 <script>
+    const $ = id => document.getElementById(id);
+
     function toggleFormulario() {
-        document.getElementById("formularioTarea").classList.toggle("activo");
+        $("formularioTarea").classList.toggle("activo");
     }
 
     function enviarComentario() {
-        const input = document.getElementById('comentarioInput');
+        const input = $("comentarioInput");
         const texto = input.value.trim();
 
-        if (texto !== '') {
-            const contenedor = document.getElementById('zona-comentarios');
+        if (texto) {
+            const contenedor = $("zona-comentarios");
             const nuevo = document.createElement('p');
             nuevo.innerHTML = `<strong>Tú:</strong> ${texto}`;
             contenedor.appendChild(nuevo);
@@ -455,115 +458,111 @@
         }
     }
 
-    document.addEventListener("click", function(event) {
-        const modal = document.getElementById("formularioTarea");
-        const btnAbrir = document.getElementById("btnAbrirFormulario");
-        if (
-            modal.classList.contains("activo") &&
-            !modal.contains(event.target) &&
-            !btnAbrir.contains(event.target)
-        ) {
+    document.addEventListener("click", ({ target }) => {
+        const modal = $("formularioTarea");
+        const btnAbrir = $("btnAbrirFormulario");
+
+        if (modal.classList.contains("activo") &&
+            !modal.contains(target) &&
+            !btnAbrir.contains(target)) {
             modal.classList.remove("activo");
         }
     });
 
-    document.addEventListener("keydown", function(event) {
-        if (event.key === "Escape") {
-            document.getElementById("formularioTarea").classList.remove("activo");
+    document.addEventListener("keydown", ({ key }) => {
+        if (key === "Escape") {
+            $("formularioTarea").classList.remove("activo");
         }
     });
 
-    function cargarTarea(id) {
-        fetch(`/Tarea/Details/${id}`)
-            .then(response => response.json())
-            .then(tarea => {
-                document.getElementById("tituloTarea").value = tarea.titulo;
-                document.getElementById("descripcionTarea").value = tarea.descripcion;
-                document.getElementById("fechaLimite").value = tarea.fechaLimite.split('T')[0];
-                document.getElementById("estadoTarea").value = tarea.estado;
-                document.getElementById("prioridadTarea").value = tarea.prioridad;
-                document.getElementById("idTarea").value = tarea.idTarea;
-                document.getElementById("idUsuario").value = tarea.idUsuario;
-                document.getElementById("idEquipo").value = tarea.idEquipo;
-                toggleFormulario();
-            })
-            .catch(error => console.error("Error al cargar la tarea:", error));
+    async function cargarTarea(id) {
+        try {
+            const response = await fetch(`/Tarea/Details/${id}`);
+            const tarea = await response.json();
+
+            setFieldValues({
+                tituloTarea: tarea.titulo,
+                descripcionTarea: tarea.descripcion,
+                fechaLimite: tarea.fechaLimite,
+                estadoTarea: tarea.estado,
+                prioridadTarea: tarea.prioridad,
+                idTarea: tarea.idTarea,
+                idUsuario: tarea.idUsuario,
+                idEquipo: tarea.idEquipo
+            });
+
+            toggleFormulario();
+        } catch (error) {
+            console.error("Error al cargar la tarea:", error);
+        }
     }
 
     function agregarTareaModal() {
-        document.getElementById("tituloTarea").value = '';
-        document.getElementById("descripcionTarea").value = '';
-        document.getElementById("fechaLimite").value = '';
-        document.getElementById("estadoTarea").value = '';
-        document.getElementById("prioridadTarea").value = '';
-        document.getElementById("idTarea").value = '';
-        document.getElementById("idUsuario").value = '';
-        document.getElementById("idEquipo").value = '';
-        const contenedor = document.getElementById('zona-comentarios');
-        contenedor.innerHTML = '';
+        setFieldValues({
+            tituloTarea: '',
+            descripcionTarea: '',
+            fechaLimite: '',
+            estadoTarea: '',
+            prioridadTarea: '',
+            idTarea: '',
+            idEquipo: ''
+        });
+
+        $("zona-comentarios").innerHTML = '';
         toggleFormulario();
     }
 
-    function guardarTarea() {
-        const tarea = {
-            idTarea: document.getElementById("idTarea").value,
-            idUsuario: document.getElementById("idUsuario").value,
-            idEquipo: document.getElementById("idEquipo").value,
-            titulo: document.getElementById("tituloTarea").value,
-            descripcion: document.getElementById("descripcionTarea").value,
-            fechaLimite: document.getElementById("fechaLimite").value,
-            estado: document.getElementById("estadoTarea").value,
-            prioridad: document.getElementById("prioridadTarea").value
-        };
-
-        const token = sessionStorage.getItem("Token");
-
-        if (tarea.idTarea) {
-                fetch(`/Tarea/Edit`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + token
-                    },
-                    body: JSON.stringify(tarea)
-                })
-                .then(response => {
-                    if (response.ok) {
-                        console.log('Tarea actualizada exitosamente');
-                        toggleFormulario();
-                        location.reload();
-                    } else {
-                        console.error('Error al actualizar la tarea:', response.statusText);
-                        alert("Hubo un error al actualizar la tarea.");
-                    }
-                })
-                .catch(error => {
-                    console.error('Error en la solicitud:', error);
-                    alert("Hubo un problema al procesar la solicitud.");
-                });
-
-        } else {
-
-            fetch(`/Tarea/Create`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + token
-                },
-                body: JSON.stringify(tarea)
-            })
-            .then(response => {
-                if (response.ok) {
-                    toggleFormulario();
-                    location.reload();
-                } else {
-                    alert("Hubo un error al crear la tarea.");
-                }
-            })
-            .catch(error => console.error('Error:', error));
+    function setFieldValues(values) {
+        for (const [id, value] of Object.entries(values)) {
+            const element = $(id);
+            if (element) element.value = value;
         }
     }
 
 
+    async function guardarTarea() {
+        const getValue = id => document.getElementById(id)?.value.trim();
+        const idTarea = getValue("idTarea");
 
+        const tarea = {
+            IdUsuario: parseInt(getValue("idUsuario")),
+            idEquipo: parseInt(getValue("idEquipo")),
+            Titulo: getValue("tituloTarea"),
+            Descripcion: getValue("descripcionTarea"),
+            FechaLimite: getValue("fechaLimite"),
+            Estado: getValue("estadoTarea"),
+            Prioridad: getValue("prioridadTarea")
+        };
+
+        if (idTarea) {
+            tarea.IdTarea = parseInt(idTarea);
+        }
+
+        const token = sessionStorage.getItem("Token");
+        const url = idTarea ? '/Tarea/Edit' : '/Tarea/Create';
+        const method = idTarea ? 'PUT' : 'POST';
+
+        try {
+            const response = await fetch(url, {
+                method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(tarea)
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error: ${response.statusText}`);
+            }
+
+            console.log(idTarea ? 'Tarea actualizada' : 'Tarea creada');
+            toggleFormulario();
+            location.reload();
+
+        } catch (error) {
+            console.error('Error al guardar la tarea:', error);
+            alert('Hubo un error al guardar la tarea.');
+        }
+    }
 </script>
