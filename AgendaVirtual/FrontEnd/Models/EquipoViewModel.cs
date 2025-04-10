@@ -10,10 +10,10 @@
 
         public DateTime? FechaCreacion { get; set; }
 
-        public List<UsuarioViewModel>? ParticipanteList { get; set; }
+        public List<UsuarioViewModel>? participanteList { get; set; }
 
-        public string ParticipanteId { get; set; } = null!;
+        public string participanteId { get; set; } = null!;
 
-        public string? ParticipanteNombre { get; set; }
+        public string? participanteNombre { get; set; }
     }
 }

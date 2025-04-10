@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using DAL.Interfaces;
 using Entities.Entities;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Implementations
@@ -11,7 +12,6 @@ namespace DAL.Implementations
     public class EquipoDAL : DALGenericoImpl<Equipo>, IEquipoDAL
     {
         private AgendaVirtualContext _context;
-
         public EquipoDAL(AgendaVirtualContext context) : base(context)
         {
             _context = context;
@@ -40,7 +40,6 @@ namespace DAL.Implementations
                     .Any(ue => ue.IdEquipo == idEquipo && ue.IdUsuario == u.IdUsuario))
                 .ToList();
         }
-
         public Equipo GetEquipoByUsuario(int idUsuario)
         {
             return _context.Equipos
@@ -54,27 +53,6 @@ namespace DAL.Implementations
             _context.Equipos.Add(equipo);
             _context.SaveChanges();
             return equipo;
-        }
-
-        public bool AddEquipoConSP(Equipo entity)
-        {
-            try
-            {
-                string sql = "exec [dbo].[AgregarEquipo] @nombre, @descripcion, @fecha_creacion";
-                var param = new SqlParameter[]
-                {
-                    new SqlParameter("@nombre", System.Data.SqlDbType.NVarChar) { Value = entity.Nombre },
-                    new SqlParameter("@descripcion", System.Data.SqlDbType.NVarChar) { Value = entity.Descripcion },
-                    new SqlParameter("@fecha_creacion", System.Data.SqlDbType.DateTime) { Value = entity.FechaCreacion }
-                };
-
-                _context.Database.ExecuteSqlRaw(sql, param);
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
         }
     }
 }

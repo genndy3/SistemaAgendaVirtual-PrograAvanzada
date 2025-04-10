@@ -1,7 +1,9 @@
 ﻿using BackEnd.DTO;
 using BackEnd.Services.Interfaces;
+using DAL.Implementations;
 using DAL.Interfaces;
 using Entities.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace BackEnd.Services.Implementations
 {
@@ -24,7 +26,6 @@ namespace BackEnd.Services.Implementations
                 FechaCreacion = equipo.FechaCreacion
             };
         }
-
         Equipo Convertir(EquipoDTO equipoDTO)
         {
             return new Equipo
@@ -55,13 +56,6 @@ namespace BackEnd.Services.Implementations
             return Convertir(nuevoEquipo);
         }
 
-        public void AddEquipo(EquipoDTO equipo)
-        {
-            var categoryEntity = Convertir(equipo);
-            _unidadDeTrabajo.equipoDAL.Add(categoryEntity);
-            _unidadDeTrabajo.Complete();
-        }
-
         public EquipoDTO Delete(int id)
         {
             Equipo equipo = new Equipo { IdEquipo = id };
@@ -76,7 +70,7 @@ namespace BackEnd.Services.Implementations
             return Convertir(equipo);
         }
 
-        public List<EquipoDTO> GetEquipo()
+        public List<EquipoDTO> GetAll()
         {
             var equipos = _unidadDeTrabajo.equipoDAL.GetAll();
             List<EquipoDTO> equiposDTO = new List<EquipoDTO>();
@@ -136,5 +130,6 @@ namespace BackEnd.Services.Implementations
             var equipo = _unidadDeTrabajo.equipoDAL.GetEquipoByUsuario(idUsuario);
             return Convertir(equipo);
         }
+
     }
 }

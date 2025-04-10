@@ -7,97 +7,80 @@ namespace FrontEnd.Helpers.Implementations
 {
     public class UsuarioHelper : IUsuarioHelper
     {
-        IServiceRepository _repository;
-
-        public UsuarioHelper(IServiceRepository repository)
+        IServiceRepository _serviceRepository;
+        public string Token { get; set; }
+        public UsuarioHelper(IServiceRepository serviceRepository)
         {
-            _repository = repository;
+            _serviceRepository = serviceRepository;
         }
 
-        UsuarioViewModel Convertir(UsuarioAPI usuario)
+        UsuarioViewModel convertir(UsuarioAPI usuarioAPI)
         {
             return new UsuarioViewModel
             {
-                IdUsuario = usuario.IdUsuario,
-                Nombre = usuario.Nombre,
-                Correo = usuario.Correo,
-                Contrasena = usuario.Contrasena,
-                Rol = usuario.Rol,
-                FechaRegistro = usuario.FechaRegistro
+                IdUsuario = usuarioAPI.IdUsuario,
+                Nombre = usuarioAPI.Nombre
             };
         }
-        
-        UsuarioAPI Convertir(UsuarioViewModel usuario)
+        public UsuarioViewModel addUsuario(UsuarioViewModel usuario)
         {
-            return new UsuarioAPI
+            _serviceRepository.Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            HttpResponseMessage response = _serviceRepository.PostResponse("api/usuario", usuario);
+            if (response.IsSuccessStatusCode)
             {
-                IdUsuario = usuario.IdUsuario,
-                Nombre = usuario.Nombre,
-                Correo = usuario.Correo,
-                Contrasena = usuario.Contrasena,
-                Rol = usuario.Rol,
-                FechaRegistro = usuario.FechaRegistro
-            };
-        }
-
-        public UsuarioViewModel AddUsuario(UsuarioViewModel usuario)
-        {
-            HttpResponseMessage responseMessage = _repository.PostResponse("api/usuario", Convertir(usuario));
-            if (responseMessage != null)
-            {
-                var content = responseMessage.Content;
+                var content = response.Content.ReadAsStringAsync().Result;
             }
-
             return usuario;
         }
 
-        public List<UsuarioViewModel> GetAll()
+        public void deleteUsuario(int id)
         {
-            List<UsuarioAPI> usuarios = new List<UsuarioAPI>();
-            HttpResponseMessage responseMessage = _repository.GetResponse("api/usuario");
+            _serviceRepository.Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            HttpResponseMessage response = _serviceRepository.DeleteResponse($"api/usuario/{id}");
+        }
 
-            if (responseMessage != null)
+        public List<UsuarioViewModel> getUsuarios()
+        {
+            _serviceRepository.Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            HttpResponseMessage responseMessage = _serviceRepository.GetResponse("api/usuario");
+            List<UsuarioAPI> usuarios = new List<UsuarioAPI>();
+            if (responseMessage.IsSuccessStatusCode)
             {
                 var content = responseMessage.Content.ReadAsStringAsync().Result;
                 usuarios = JsonConvert.DeserializeObject<List<UsuarioAPI>>(content);
             }
-
-            List<UsuarioViewModel> list = new List<UsuarioViewModel>();
-            foreach (var item in usuarios)
+            List<UsuarioViewModel> resultado = new List<UsuarioViewModel>();
+            foreach (var usuario in usuarios)
             {
-                list.Add(Convertir(item));
+                resultado.Add(convertir(usuario));
             }
-
-            return list;
+            return resultado;
         }
 
-        public UsuarioViewModel GetById(int id)
+        public UsuarioViewModel getUsuario(int id)
         {
+            _serviceRepository.Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            HttpResponseMessage responseMessage = _serviceRepository.GetResponse("api/usuario/" + id.ToString());
             UsuarioAPI usuario = new UsuarioAPI();
-            HttpResponseMessage responseMessage = _repository.GetResponse("api/Usuario/" + id.ToString());
-
-            if (responseMessage != null)
+            if (responseMessage.IsSuccessStatusCode)
             {
                 var content = responseMessage.Content.ReadAsStringAsync().Result;
                 usuario = JsonConvert.DeserializeObject<UsuarioAPI>(content);
             }
-
-            return Convertir(usuario);
+            UsuarioViewModel resultado = convertir(usuario);
+            return resultado;
         }
 
-        public UsuarioViewModel UpdateUsuario(UsuarioViewModel usuario)
+        public UsuarioViewModel updateUsuario(UsuarioViewModel usuario)
         {
-            HttpResponseMessage responseMessage = _repository.PutResponse($"api/usuario/{usuario.IdUsuario}", Convertir(usuario));
-            if (responseMessage != null)
+            _serviceRepository.Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            HttpResponseMessage response = _serviceRepository.PutResponse("api/usuario", usuario);
+            if (response.IsSuccessStatusCode)
             {
-                var content = responseMessage.Content;
+                var content = response.Content.ReadAsStringAsync().Result;
+                usuario = JsonConvert.DeserializeObject<UsuarioViewModel>(content);
             }
             return usuario;
-        }
-
-        void IUsuarioHelper.DeleteUsuario(int id)
-        {
-            throw new NotImplementedException();
         }
     }
 }

@@ -24,10 +24,6 @@ builder.Services.AddScoped<IEquipoHelper, EquipoHelper>();
 builder.Services.AddScoped<IUsuarioHelper, UsuarioHelper>();
 builder.Services.AddScoped<IUsuarioEquipoHelper, UsuarioEquipoHelper>();
 
-builder.Services.AddScoped<IUsuarioHelper, UsuarioHelper>();
-builder.Services.AddScoped<IEquipoHelper, EquipoHelper>();
-builder.Services.AddScoped<ITareaHelper, TareaHelper>();
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -39,9 +35,6 @@ app.UseStaticFiles();
 
 app.UseRouting();
 app.UseSession();
-app.UseAuthentication();  
-
-
 app.UseAuthorization();
 
 app.MapControllerRoute(
