@@ -33,6 +33,18 @@ namespace BackEnd.Controllers
             return Ok(_tareaService.Get(id));
         }
 
+        [HttpGet("Usuario/{idUsuario}")]
+        public ActionResult GetAllByUser(int idUsuario)
+        {
+            return Ok(_tareaService.GetAllByUser(idUsuario));
+        }
+
+        [HttpGet("Equipo/{idUsuario}")]
+        public ActionResult GetAllByEquipoAndUser(int idUsuario)
+        {
+            return Ok(_tareaService.GetAllByEquipoAndUser(idUsuario));
+        }
+
         // POST api/<EquipoController>
         [HttpPost]
         public void Post([FromBody] TareaDTO tarea)
