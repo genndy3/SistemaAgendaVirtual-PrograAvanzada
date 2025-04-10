@@ -47,17 +47,24 @@ namespace BackEnd.Services.Implementations
 
         public TareaDTO Add(TareaDTO tareaDTO)
         {
-            _unidadDeTrabajo.tareaDAL.Add(Convertir(tareaDTO));
-            _unidadDeTrabajo.Complete();
-            return tareaDTO;
+            try
+            {
+                _unidadDeTrabajo.tareaDAL.Add(Convertir(tareaDTO));
+                _unidadDeTrabajo.Complete();
+                return tareaDTO;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al agregar la tarea: " + ex.Message);
+            }
         }
 
-        public TareaDTO Delete(int id)
+        public void Delete(int id)
         {
             Tarea tarea = new Tarea { IdTarea = id };
             _unidadDeTrabajo.tareaDAL.Remove(tarea);
             _unidadDeTrabajo.Complete();
-            return Convertir(tarea);
+            throw new NotImplementedException("Eliminación de tarea no completada");
         }
 
         public TareaDTO Get(int id)

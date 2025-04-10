@@ -8,6 +8,10 @@
 
         public int? IdEquipo { get; set; }
 
+        public IEnumerable<UsuarioViewModel> Usuarios { get; set; }
+
+        public IEnumerable<EquipoViewModel> Equipos { get; set; }
+
         public string Titulo { get; set; } = null!;
 
         public string? Descripcion { get; set; }

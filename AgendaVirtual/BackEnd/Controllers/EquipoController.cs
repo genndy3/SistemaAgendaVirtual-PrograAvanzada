@@ -3,8 +3,6 @@ using BackEnd.Services.Implementations;
 using BackEnd.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace BackEnd.Controllers
 {
     [Route("api/[controller]")]
@@ -14,14 +12,15 @@ namespace BackEnd.Controllers
         IEquipoService _equipoService;
         public EquipoController(IEquipoService equipoService)
         {
-            _equipoService = equipoService;
+            this._equipoService = equipoService;
         }
 
         // GET: api/<EquipoController>
         [HttpGet]
         public ActionResult Get()
         {
-            return Ok(_equipoService.GetAll());
+            var result = _equipoService.GetEquipo();
+            return Ok(result);
         }
 
         // GET api/<EquipoController>/5
