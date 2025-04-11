@@ -1,4 +1,4 @@
-﻿namespace FrontEnd.Models
+namespace FrontEnd.Models
 {
     public class EquipoViewModel
     {
@@ -10,10 +10,10 @@
 
         public DateTime? FechaCreacion { get; set; }
 
-        public List<UsuarioViewModel>? participanteList { get; set; }
+        public List<UsuarioViewModel>? ParticipanteList { get; set; }
 
-        public string participanteId { get; set; } = null!;
+        public string ParticipanteId { get; set; } = null!;
 
-        public string? participanteNombre { get; set; }
+        public string? ParticipanteNombre { get; set; }
     }
 }

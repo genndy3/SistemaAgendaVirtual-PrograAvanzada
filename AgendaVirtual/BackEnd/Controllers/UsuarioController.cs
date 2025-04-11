@@ -50,6 +50,5 @@ namespace BackEnd.Controllers
         {
             _usuarioService.Delete(id);
         }
-        
     }
 }

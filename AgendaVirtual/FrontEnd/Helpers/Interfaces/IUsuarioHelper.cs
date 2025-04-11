@@ -1,14 +1,15 @@
-﻿using FrontEnd.Models;
+using FrontEnd.Models;
 
 namespace FrontEnd.Helpers.Interfaces
 {
     public interface IUsuarioHelper
     {
-        string Token { get; set; }
-        List<UsuarioViewModel> getUsuarios();
-        UsuarioViewModel getUsuario(int id);
-        UsuarioViewModel addUsuario(UsuarioViewModel usuario);
-        UsuarioViewModel updateUsuario(UsuarioViewModel usuario);
-        void deleteUsuario(int id);
+        string Token { get; set; }  
+        
+        List<UsuarioViewModel> GetAll();  
+        UsuarioViewModel GetById(int id);  
+        UsuarioViewModel AddUsuario(UsuarioViewModel usuario); 
+        UsuarioViewModel UpdateUsuario(UsuarioViewModel usuario);  
+        void DeleteUsuario(int id);  
     }
 }

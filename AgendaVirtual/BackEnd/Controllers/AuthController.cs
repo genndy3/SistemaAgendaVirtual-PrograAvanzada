@@ -1,6 +1,5 @@
 ﻿using Azure;
 using BackEnd.DTO;
-using BackEnd.Services.Implementations;
 using BackEnd.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -22,7 +21,6 @@ namespace BackEnd.Controllers
         {
             this.userManager = userManager;
             this.TokenService = tokenService;
-
         }
 
         [HttpPost]
@@ -35,7 +33,7 @@ namespace BackEnd.Controllers
             LoginDTO Usuario = new LoginDTO();
             if (user != null && await userManager.CheckPasswordAsync(user, model.Password))
             {
-                int IdUsuario = TokenService.GetIdUser(user.Id);
+
                 var userRoles = await userManager.GetRolesAsync(user);
 
                 var jwtToken = TokenService.GenerateToken(user, userRoles.ToList());
@@ -43,10 +41,10 @@ namespace BackEnd.Controllers
                 Usuario.Token = jwtToken;
                 Usuario.Roles = userRoles.ToList();
                 Usuario.Username = user.UserName;
-                Usuario.IdUsuario = IdUsuario;
+
+
                 return Ok(Usuario);
             }
-            
 
             return Unauthorized();
 

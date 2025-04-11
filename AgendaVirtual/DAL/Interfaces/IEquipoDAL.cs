@@ -9,10 +9,5 @@ namespace DAL.Interfaces
 {
     public interface IEquipoDAL : IDALGenerico<Equipo>
     {
-        IEnumerable<Equipo> GetAllByUser(int idUsuario);
-        IEnumerable<Usuario> GetUsuariosByEquipo(int idEquipo);
-        IEnumerable<Usuario> GetUsuariosNotInEquipo(int idEquipo);
-        Equipo GetEquipoByUsuario(int idUsuario);
-        Equipo agregarEquipo(Equipo equipo);
     }
 }
