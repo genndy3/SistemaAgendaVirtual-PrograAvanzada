@@ -11,6 +11,7 @@ namespace FrontEnd.Helpers.Interfaces
         TareaViewModel AddTarea(TareaViewModel tarea);
         TareaViewModel UpdateTarea(TareaViewModel tarea);
         void DeleteTarea(int id);
+        TareaViewModel getTarea(int id);
 
         List<TareaViewModel> GetTareasPersonales(int usuarioId);
         List<TareaViewModel> GetTareasPorEquipo(int equipoId);

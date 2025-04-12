@@ -11,5 +11,6 @@ namespace DAL.Interfaces
     {
         public bool UpdateSP(Usuario usuario);
         public bool DeleteSP(Usuario usuario);
+        public int GetIdUser(string id);
     }
 }

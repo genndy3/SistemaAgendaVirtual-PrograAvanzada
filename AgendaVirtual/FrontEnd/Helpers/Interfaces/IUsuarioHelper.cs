@@ -6,8 +6,8 @@ namespace FrontEnd.Helpers.Interfaces
     {
         string Token { get; set; }  
         
-        List<UsuarioViewModel> GetAll();  
-        UsuarioViewModel GetById(int id);  
+        List<UsuarioViewModel> GetUsuarios();  
+        UsuarioViewModel GetUsuario(int id);  
         UsuarioViewModel AddUsuario(UsuarioViewModel usuario); 
         UsuarioViewModel UpdateUsuario(UsuarioViewModel usuario);  
         void DeleteUsuario(int id);  

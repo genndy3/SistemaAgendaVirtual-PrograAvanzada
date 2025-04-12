@@ -50,15 +50,13 @@ namespace BackEnd.Services.Implementations
             };
         }
 
-        // Método Add (devuelve DTO, de la rama feature)
         public EquipoDTO Add(EquipoDTO equipoDTO)
         {
-            Equipo nuevoEquipo = _unidadDeTrabajo.equipoDAL.Add(Convertir(equipoDTO));
+            Equipo nuevoEquipo = _unidadDeTrabajo.equipoDAL.agregarEquipo(Convertir(equipoDTO));
             _unidadDeTrabajo.Complete();
             return Convertir(nuevoEquipo);
         }
 
-        // Método alternativo (si se necesita void, de la rama dev)
         public void AddEquipo(EquipoDTO equipo)
         {
             var equipoEntity = Convertir(equipo);
@@ -98,7 +96,6 @@ namespace BackEnd.Services.Implementations
             return equipoDTO;
         }
 
-        // Métodos adicionales de la rama feature/equipos-(frontend)
         public List<EquipoDTO> GetAllByUser(int idUsuario)
         {
             var equipos = _unidadDeTrabajo.equipoDAL.GetAllByUser(idUsuario);

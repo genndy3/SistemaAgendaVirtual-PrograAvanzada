@@ -14,6 +14,7 @@ public partial class Usuario
     public string Contrasena { get; set; } = null!;
 
     public string Rol { get; set; } = null!;
+    public string? IdIdentity { get; set; }
 
     public DateTime? FechaRegistro { get; set; }
 

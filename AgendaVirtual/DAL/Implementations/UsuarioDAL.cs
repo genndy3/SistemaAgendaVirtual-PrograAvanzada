@@ -88,7 +88,6 @@ namespace DAL.Implementations
             }
         }
 
-        // Método de la rama feature/equipos-(frontend)
         public int GetIdUser(string id)
         {
             try

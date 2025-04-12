@@ -43,12 +43,10 @@ namespace FrontEnd.Helpers.Implementations
             return new UsuarioViewModel
             {
                 IdUsuario = usuarioAPI.IdUsuario,
-                Nombre = usuarioAPI.Nombre,
-                Correo = usuarioAPI.Correo,
-                Rol = usuarioAPI.Rol,
-                FechaRegistro = usuarioAPI.FechaRegistro
+                Nombre = usuarioAPI.Nombre
             };
         }
+
 
         public List<EquipoViewModel> GetEquipos()
         {
@@ -156,7 +154,7 @@ namespace FrontEnd.Helpers.Implementations
             return resultado;
         }
 
-        public List<UsuarioViewModel> GetUsuariosNoEnEquipo(int equipoId)
+        public List<UsuarioViewModel> GetUsuariosNotInEquipo(int equipoId)
         {
             _repository.Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
             HttpResponseMessage responseMessage = _repository.GetResponse($"api/Equipo/UsuariosNotIn/{equipoId}");
@@ -189,5 +187,44 @@ namespace FrontEnd.Helpers.Implementations
             }
             return Convertir(equipo);
         }
+
+        public EquipoViewModel addEquipo(EquipoViewModel equipo)
+        {
+            _repository.Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            HttpResponseMessage response = _repository.PostResponse("api/equipo", equipo);
+            if (response.IsSuccessStatusCode)
+            {
+                var content = response.Content.ReadAsStringAsync().Result;
+                equipo = JsonConvert.DeserializeObject<EquipoViewModel>(content);
+            }
+            return equipo;
+        }
+        public EquipoViewModel updateEquipo(EquipoViewModel equipo)
+        {
+
+            _repository.Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            HttpResponseMessage response = _repository.PutResponse("api/equipo", equipo);
+            if (response.IsSuccessStatusCode)
+            {
+                var content = response.Content.ReadAsStringAsync().Result;
+                equipo = JsonConvert.DeserializeObject<EquipoViewModel>(content);
+            }
+            return equipo;
+        }
+
+        public EquipoViewModel getEquipo(int id)
+        {
+            _repository.Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            HttpResponseMessage responseMessage = _repository.GetResponse("api/equipo/" + id.ToString());
+            EquipoAPI equipo = new EquipoAPI();
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                var content = responseMessage.Content.ReadAsStringAsync().Result;
+                equipo = JsonConvert.DeserializeObject<EquipoAPI>(content);
+            }
+            EquipoViewModel resultado = Convertir(equipo);
+            return resultado;
+        }
+
     }
 }

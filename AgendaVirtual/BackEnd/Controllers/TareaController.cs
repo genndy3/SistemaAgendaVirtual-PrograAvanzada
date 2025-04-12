@@ -53,5 +53,17 @@ namespace BackEnd.Controllers
         {
             _tareaService.Delete(id);
         }
+
+        [HttpGet("Usuario/{idUsuario}")]
+        public ActionResult GetAllByUser(int idUsuario)
+        {
+            return Ok(_tareaService.GetAllByUser(idUsuario));
+        }
+
+        [HttpGet("Equipo/{idUsuario}")]
+        public ActionResult GetAllByEquipoAndUser(int idUsuario)
+        {
+            return Ok(_tareaService.GetAllByEquipoAndUser(idUsuario));
+        }
     }
 }

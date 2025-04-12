@@ -15,5 +15,25 @@ namespace DAL.Implementations
         {
             _context = context;
         }
+        public IEnumerable<Tarea> getAllByUser(int idUsuario)
+        {
+            return _context.Tareas
+                   .Where(t => t.IdUsuario == idUsuario &&
+                               !_context.UsuarioEquipos.Any(ue => ue.IdUsuario == idUsuario && ue.IdEquipo == t.IdEquipo))
+                   .ToList();
+        }
+        public IEnumerable<Tarea> getAllByEquipoAndUser(int idUsuario)
+        {
+            var equipos = _context.UsuarioEquipos
+                                  .Where(ue => ue.IdUsuario == idUsuario)
+                                  .Select(ue => ue.IdEquipo)
+                                  .ToList();
+
+            var tareas = _context.Tareas
+                                 .Where(t => equipos.Contains((int)t.IdEquipo) && t.IdUsuario == idUsuario)
+                                 .ToList();
+
+            return tareas;
+        }
     }
 }

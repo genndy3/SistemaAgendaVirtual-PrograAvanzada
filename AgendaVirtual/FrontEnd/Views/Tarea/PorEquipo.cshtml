@@ -1,0 +1,568 @@
+﻿@model IEnumerable<FrontEnd.Models.TareaViewModel>
+
+@{
+    ViewData["Title"] = "PorEquipo";
+    Layout = null;
+}
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Usuarios - Timely</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100%;
+        }
+
+        .label-espaciado {
+            padding-right: 20px;
+        }
+
+        .formulario-tarea {
+            position: fixed;
+            top: 0;
+            right: -800px;
+            width: 800px;
+            height: 100%;
+            background: white;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            transition: right 0.3s ease-in-out;
+        }
+
+            .formulario-tarea.activo {
+                right: 0;
+            }
+
+        .estado-badge {
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 0.9em;
+            color: white;
+        }
+
+        .estado-completado {
+            background: green;
+        }
+
+        .estado-en-curso {
+            background: blue;
+        }
+
+        .estado-pausado {
+            background: orange;
+        }
+
+        .estado-cancelado {
+            background: red;
+        }
+
+        td, th {
+            border: none;
+            color: #233671;
+            align-content: center;
+            align-items: center;
+        }
+
+        th {
+            color: #233671;
+        }
+
+        tr {
+            color: #233671;
+            align-content: center;
+            align-items: center;
+        }
+
+        .border-blue {
+            border: 0;
+            border-bottom: 2px solid #233671;
+        }
+
+            .border-blue:focus {
+                border: 0;
+                border-bottom: 2px solid #233671;
+            }
+
+        .tarea-bg {
+            background-color: rgba(211, 211, 211, 0.4);
+            border: 0;
+        }
+
+            .tarea-bg:focus {
+                background-color: rgba(211, 211, 211, 0.4);
+                border: 0;
+            }
+
+        .text-blue {
+            color: #233671;
+        }
+
+        .btn-cancelar {
+            border: 2px solid #233671;
+            background-color: none;
+            width: 120px;
+            height: 35px;
+            border-radius: 10px;
+        }
+
+        .btn-crear {
+            background-color: #233671;
+            color: white;
+            width: 120px;
+            border-radius: 10px;
+            border: none;
+            height: 35px;
+        }
+
+        .contenedor-recordatorios {
+            height: 250px;
+        }
+
+        .contenedor-comentarios {
+            background: white;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 350px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .zona-comentarios {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-right: 5px;
+            font-size: 0.9em;
+            color: #233671;
+        }
+
+        .zona-input {
+            background-color: rgba(211, 211, 211, 0.4);
+            border-radius: 10px;
+            padding: 5px 10px;
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .input-comentario {
+            flex-grow: 1;
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 0.9em;
+        }
+
+        .btn-enviar {
+            background: none;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+        }
+
+        .flecha-icono {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border: solid #233671;
+            border-width: 0 2px 2px 0;
+            transform: rotate(-45deg);
+            margin-left: 5px;
+        }
+
+
+        .content {
+            flex-grow: 1;
+        }
+
+
+        .icon-container {
+            text-align: center;
+        }
+
+            .icon-container img {
+                max-width: 100%;
+                height: auto;
+                width: 20px;
+                margin: 0 10px;
+            }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+        }
+
+        .tab-container {
+            display: flex;
+            justify-content: flex-start;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .tab {
+            display: inline-block;
+            text-align: center;
+            margin-right: 50px;
+        }
+
+            .tab h3 {
+                margin-bottom: 0;
+                position: relative;
+                z-index: 2;
+                font-size: 18px;
+            }
+
+        .tabs-line {
+            display: block;
+            width: 100%;
+            height: 3px;
+            background-color: #233671;
+        }
+
+        .tab.active-tab .tab-line {
+            width: 100%;
+            height: 6px;
+            background-color: #233671;
+        }
+
+        .tab:not(.active-tab) .tab-line {
+            display: none;
+        }
+
+        th {
+            color: #233671;
+        }
+
+        tbody tr {
+            background-color: rgba(211, 211, 211, 0.4);
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+            .actions img {
+                width: 20px;
+                height: auto;
+                margin: 0 10px;
+            }
+
+        .tab img {
+            width: 20px;
+            height: auto;
+            margin-left: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="d-flex flex-row mb-3 p-3 align-items-center flex-wrap">
+        <div class="p-2" style="width: 80px; max-width: 100%; flex-shrink: 0;">
+            <img src="\img\timely_logo.png" class="img-fluid" alt="Timely Logo">
+        </div>
+
+        <div class="p-2">
+            <h1 class="mt-2 text-center text-sm-start">TIMELY</h1>
+        </div>
+    </div>
+    <div class="container mt-4">
+        <div class="d-flex justify-content-center align-items-center">
+            <h2 class="fw-bold">Tareas</h2>
+        </div>
+
+        <div class="container mt-5">
+            <div class="tab-container">
+                <div class="tab">
+                    <a href="@Url.Action("Index", "Tarea")" style="text-decoration: none; color: inherit;">
+                        <h3>Personales</h3>
+                        <div class="tab-line"></div>
+                    </a>
+                </div>
+                <div class="tab active-tab">
+                    <a href="@Url.Action("PorEquipo", "Tarea")" style="text-decoration: none; color: inherit;">
+                        <h3>Por equipo</h3>
+                        <div class="tab-line"></div>
+                    </a>
+                </div>
+                <button id="btnAbrirFormulario" class="border-0 " style="background:none" onclick="agregarTareaModal()">
+                    <i class="bi bi-plus-circle text-lg"></i>
+                </button>
+            </div>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Tarea</th>
+                        <th>Fecha limite</th>
+                        <th>Equipo</th>
+                        <th>Estado</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center">No hay tareas personales.</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Titulo)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.FechaLimite)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.IdEquipo)
+                                </td>
+                                <td>
+                                    @if (item.Estado == "En Proceso")
+                                    {
+                                        <span class="estado-badge estado-completado">En proceso</span>
+                                    }
+                                    else if (item.Estado == "Completada")
+                                    {
+                                        <span class="estado-badge estado-en-curso">Completada</span>
+                                    }
+                                    else if (item.Estado == "Pendiente")
+                                    {
+                                        <span class="estado-badge estado-pausado">Pendiente</span>
+                                    }
+                                    else if (item.Estado == "Cancelada")
+                                    {
+                                        <span class="estado-badge estado-cancelado">Cancelada</span>
+                                    }
+                                </td>
+                                <td class="actions">
+                                    <img src="\img\editar.png" alt="Editar" onclick="cargarTarea(@item.IdTarea)" style="cursor:pointer;" />
+                                    <form asp-action="DeleteConfirmed" method="post" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta tarea?');">
+                                        <input type="hidden" name="id" value="@item.IdTarea" />
+                                        <button type="submit" class="bg-transparent border-0">
+                                            <img src="\img\eliminar.png" alt="Eliminar" />
+                                        </button>
+                                    </form>
+
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div id="formularioTarea" class="col-md-5 formulario-tarea border border-0">
+        <div class="modal-content border border-0">
+            <div class="modal-header border border-0">
+                <h3 class="text-blue">Crear Tarea</h3>
+            </div>
+            <div class="modal-body border border-0">
+                <div class="form-group">
+                    <input type="text" id="tituloTarea"
+                           class="form-control border-blue rounded-0 shadow-none"
+                           placeholder="Título">
+                    <input type="hidden" id="idTarea">
+                    <input type="hidden" id="idUsuario" value="@ViewBag.IdUsuario">
+                    <input type="hidden" id="idEquipo">
+                </div>
+                <div class="form-group mt-4">
+                    <label for="descripcionTarea" class="text-blue">Descripción</label>
+                    <textarea id="descripcionTarea" class="form-control tarea-bg shadow-none" placeholder="Describe tu tarea" rows="4"></textarea>
+                </div>
+                <div class="form-group mt-4 d-flex justify-content-start">
+                    <label for="fechaLimite" class="label-espaciado text-blue w-25">Fecha Límite</label>
+                    <input type="datetime-local" id="fechaLimite" class="form-control w-25 tarea-bg">
+                </div>
+                <div class="form-group mt-4 d-flex justify-content-start">
+                    <label for="estadoTarea" class="label-espaciado w-25 text-blue">Estado</label>
+                    <select id="estadoTarea" class="form-control w-25 tarea-bg">
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="En Proceso">En Proceso</option>
+                        <option value="Completada">Completada</option>
+                        <option value="Cancelada">Cancelada</option>
+                    </select>
+                </div>
+                <div class="form-group mt-4 d-flex justify-content-start">
+                    <label for="prioridadTarea" class="label-espaciado w-25 text-blue">Prioridad</label>
+                    <select id="prioridadTarea" class="form-control w-25 tarea-bg">
+                        <option value="Alta">Alta</option>
+                        <option value="Media">Media</option>
+                        <option value="Baja">Baja</option>
+                    </select>
+                </div>
+                <div class="form-group mt-4 contenedor-recordatorios">
+                    <label for="recordatorioFecha" class="text-blue">Recordatorio</label>
+                    <div class="d-flex mt-2">
+                        <input type="text" id="recordatorioFecha" class="form-control me-4" placeholder="Selecciona">
+                        <button class="border-0 bg-transparent ">
+                            <i class="bi bi-plus-circle" style="font-size: 30px"></i>
+                        </button>
+                    </div>
+
+                </div>
+                <div class="form-group mt-4">
+                    <label for="comentarios" class="text-blue">Comentarios</label>
+                    <div class="contenedor-comentarios mt-2">
+                        <div class="zona-comentarios" id="zona-comentarios">
+                        </div>
+                        <div class="zona-input">
+                            <input type="text" id="comentarioInput" class="input-comentario" placeholder="Escribe un comentario...">
+                            <button class="btn-enviar" onclick="enviarComentario()">
+                                <span class="flecha-icono"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer w-100">
+                <button class="btn-cancelar text-blue" onclick="toggleFormulario()">Cancelar</button>
+                <button class="btn-crear" onclick="guardarTarea()">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+<script>
+    const $ = id => document.getElementById(id);
+
+    function toggleFormulario() {
+        $("formularioTarea").classList.toggle("activo");
+    }
+
+    function enviarComentario() {
+        const input = $("comentarioInput");
+        const texto = input.value.trim();
+
+        if (texto) {
+            const contenedor = $("zona-comentarios");
+            const nuevo = document.createElement('p');
+            nuevo.innerHTML = `<strong>Tú:</strong> ${texto}`;
+            contenedor.appendChild(nuevo);
+            input.value = '';
+            contenedor.scrollTop = contenedor.scrollHeight;
+        }
+    }
+
+    document.addEventListener("click", ({ target }) => {
+        const modal = $("formularioTarea");
+        const btnAbrir = $("btnAbrirFormulario");
+
+        if (modal.classList.contains("activo") &&
+            !modal.contains(target) &&
+            !btnAbrir.contains(target)) {
+            modal.classList.remove("activo");
+        }
+    });
+
+    document.addEventListener("keydown", ({ key }) => {
+        if (key === "Escape") {
+            $("formularioTarea").classList.remove("activo");
+        }
+    });
+
+    async function cargarTarea(id) {
+        try {
+            const response = await fetch(`/Tarea/Details/${id}`);
+            const tarea = await response.json();
+
+            setFieldValues({
+                tituloTarea: tarea.titulo,
+                descripcionTarea: tarea.descripcion,
+                fechaLimite: tarea.fechaLimite,
+                estadoTarea: tarea.estado,
+                prioridadTarea: tarea.prioridad,
+                idTarea: tarea.idTarea,
+                idUsuario: tarea.idUsuario,
+                idEquipo: tarea.idEquipo
+            });
+
+            toggleFormulario();
+        } catch (error) {
+            console.error("Error al cargar la tarea:", error);
+        }
+    }
+
+    function agregarTareaModal() {
+        setFieldValues({
+            tituloTarea: '',
+            descripcionTarea: '',
+            fechaLimite: '',
+            estadoTarea: '',
+            prioridadTarea: '',
+            idTarea: '',
+            idEquipo: ''
+        });
+
+        $("zona-comentarios").innerHTML = '';
+        toggleFormulario();
+    }
+
+    function setFieldValues(values) {
+        for (const [id, value] of Object.entries(values)) {
+            const element = $(id);
+            if (element) element.value = value;
+        }
+    }
+
+
+    async function guardarTarea() {
+        const getValue = id => document.getElementById(id)?.value.trim();
+        const idTarea = getValue("idTarea");
+
+        const tarea = {
+            IdUsuario: parseInt(getValue("idUsuario")),
+            idEquipo: parseInt(getValue("idEquipo")),
+            Titulo: getValue("tituloTarea"),
+            Descripcion: getValue("descripcionTarea"),
+            FechaLimite: getValue("fechaLimite"),
+            Estado: getValue("estadoTarea"),
+            Prioridad: getValue("prioridadTarea")
+        };
+
+        if (idTarea) {
+            tarea.IdTarea = parseInt(idTarea);
+        }
+
+        const token = sessionStorage.getItem("Token");
+        const url = idTarea ? '/Tarea/Edit' : '/Tarea/Create';
+        const method = idTarea ? 'PUT' : 'POST';
+
+        try {
+            const response = await fetch(url, {
+                method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(tarea)
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error: ${response.statusText}`);
+            }
+
+            console.log(idTarea ? 'Tarea actualizada' : 'Tarea creada');
+            toggleFormulario();
+            location.reload();
+
+        } catch (error) {
+            console.error('Error al guardar la tarea:', error);
+            alert('Hubo un error al guardar la tarea.');
+        }
+    }
+</script>

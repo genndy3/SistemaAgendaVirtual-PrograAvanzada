@@ -11,6 +11,5 @@ namespace BackEnd.Services.Interfaces
         TareaDTO Delete(int id);
         List<TareaDTO> GetAllByUser(int idUsuario);
         List<TareaDTO> GetAllByEquipoAndUser(int idUsuario);
-        void Delete(int id);
     }
 }

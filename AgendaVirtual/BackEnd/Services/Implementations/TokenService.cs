@@ -1,7 +1,11 @@
 ﻿using BackEnd.DTO;
 using BackEnd.Services.Interfaces;
+using DAL.Implementations;
+using DAL.Interfaces;
+using Entities.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -12,18 +16,21 @@ namespace BackEnd.Services.Implementations
     {
 
         IConfiguration _configuration;
+        IUsuarioDAL _usuarioDAL;
 
-        public TokenService(IConfiguration configuration)
+        public TokenService(IConfiguration configuration, IUsuarioDAL usuarioDAL)
         {
             _configuration = configuration;
+            _usuarioDAL = usuarioDAL;
         }
 
         public TokenDTO GenerateToken(IdentityUser user, List<string> roles)
         {
-
+            int idUsuario = GetIdUser(user.Id);
             var authClaims = new List<Claim>
              {
                  new Claim(ClaimTypes.Name, user.UserName),
+                 new Claim("id_usuario", idUsuario.ToString()),
                  new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
              };
 
@@ -48,6 +55,18 @@ namespace BackEnd.Services.Implementations
                 Token = tokenString,
                 Expiration = token.ValidTo
             };
+        }
+        public int GetIdUser(string id)
+        {
+            try
+            {
+                return _usuarioDAL.GetIdUser(id);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error al obtener el ID del usuario: {ex.Message}");
+                throw;
+            }
         }
     }
 }
