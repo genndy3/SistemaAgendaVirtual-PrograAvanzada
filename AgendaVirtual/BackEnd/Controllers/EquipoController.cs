@@ -14,15 +14,14 @@ namespace BackEnd.Controllers
         IEquipoService _equipoService;
         public EquipoController(IEquipoService equipoService)
         {
-            this._equipoService = equipoService;
+            _equipoService = equipoService;
         }
 
         // GET: api/<EquipoController>
         [HttpGet]
         public ActionResult Get()
         {
-            var result = _equipoService.GetEquipo();
-            return Ok(result);
+            return Ok(_equipoService.GetAll());
         }
 
         // GET api/<EquipoController>/5

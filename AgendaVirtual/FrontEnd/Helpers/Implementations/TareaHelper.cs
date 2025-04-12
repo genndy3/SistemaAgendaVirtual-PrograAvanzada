@@ -1,6 +1,7 @@
-﻿using FrontEnd.APIModels;
+using FrontEnd.APIModels;
 using FrontEnd.Helpers.Interfaces;
 using FrontEnd.Models;
+using Microsoft.VisualStudio.Web.CodeGeneration.Design;
 using Newtonsoft.Json;
 
 namespace FrontEnd.Helpers.Implementations
@@ -8,23 +9,25 @@ namespace FrontEnd.Helpers.Implementations
     public class TareaHelper : ITareaHelper
     {
         IServiceRepository _repository;
+        public string Token { get; set; }
+
         public TareaHelper(IServiceRepository repository)
         {
             _repository = repository;
         }
 
-        TareaViewModel Convertir(TareaAPI tarea)
+        TareaViewModel Convertir(TareaAPI tareaAPI)
         {
             return new TareaViewModel
             {
-                IdTarea = tarea.IdTarea,
-                IdUsuario = tarea.IdUsuario,
-                IdEquipo = tarea.IdEquipo,
-                Titulo = tarea.Titulo,
-                Descripcion = tarea.Descripcion,
-                FechaLimite = tarea.FechaLimite,
-                Prioridad = tarea.Prioridad,
-                Estado = tarea.Estado
+                IdTarea = tareaAPI.IdTarea,
+                Titulo = tareaAPI.Titulo,
+                Descripcion = tareaAPI.Descripcion,
+                FechaLimite = tareaAPI.FechaLimite,
+                Prioridad = tareaAPI.Prioridad,
+                Estado = tareaAPI.Estado,
+                IdEquipo = tareaAPI.IdEquipo,
+                IdUsuario = tareaAPI.IdUsuario
             };
         }
 
@@ -43,51 +46,30 @@ namespace FrontEnd.Helpers.Implementations
             };
         }
 
-        public TareaViewModel AddTarea(TareaViewModel tareaViewModel)
+        public TareaViewModel AddTarea(TareaViewModel tarea)
         {
-            HttpResponseMessage responseMessage = _repository.PostResponse("api/Tarea", Convertir(tareaViewModel));
-            if (responseMessage != null)
+            _repository.Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            HttpResponseMessage response = _repository.PostResponse("api/tarea", Convertir(tarea));
+            if (response.IsSuccessStatusCode)
             {
-                var content = responseMessage.Content;
+                var content = response.Content.ReadAsStringAsync().Result;
+                tarea = Convertir(JsonConvert.DeserializeObject<TareaAPI>(content));
             }
-            return tareaViewModel;
+            return tarea;
         }
 
         public void DeleteTarea(int id)
         {
-            HttpResponseMessage responseMessage = _repository.DeleteResponse("api/Tarea/" + id.ToString());
-            if (responseMessage != null)
-            {
-                var content = responseMessage.Content;
-            }
-
-        }
-
-        public List<TareaViewModel> GetAll()
-        {
-            List<TareaAPI> tareas = new List<TareaAPI>();
-            HttpResponseMessage responseMessage = _repository.GetResponse("api/Tarea");
-
-            if (responseMessage != null)
-            {
-                var content = responseMessage.Content.ReadAsStringAsync().Result;
-                tareas = JsonConvert.DeserializeObject<List<TareaAPI>>(content) ?? new List<TareaAPI>();
-
-            }
-            List<TareaViewModel> list = new List<TareaViewModel>();
-            foreach (var item in tareas)
-            {
-                list.Add(Convertir(item));
-            }
-            return list;
+            _repository.Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            HttpResponseMessage response = _repository.DeleteResponse($"api/tarea/{id}");
         }
 
         public TareaViewModel GetById(int id)
         {
+            _repository.Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            HttpResponseMessage responseMessage = _repository.GetResponse($"api/tarea/{id}");
             TareaAPI tarea = new TareaAPI();
-            HttpResponseMessage responseMessage = _repository.GetResponse("api/Tarea/" + id.ToString());
-
-            if (responseMessage != null)
+            if (responseMessage.IsSuccessStatusCode)
             {
                 var content = responseMessage.Content.ReadAsStringAsync().Result;
                 tarea = JsonConvert.DeserializeObject<TareaAPI>(content);
@@ -95,14 +77,70 @@ namespace FrontEnd.Helpers.Implementations
             return Convertir(tarea);
         }
 
-        public TareaViewModel UpdateTarea(TareaViewModel tareaViewModel)
+        public List<TareaViewModel> GetAll()
         {
-            HttpResponseMessage responseMessage = _repository.PutResponse("api/Tarea", Convertir(tareaViewModel));
-            if (responseMessage != null)
+            _repository.Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            HttpResponseMessage responseMessage = _repository.GetResponse("api/tarea");
+            List<TareaAPI> tareas = new List<TareaAPI>();
+            if (responseMessage.IsSuccessStatusCode)
             {
-                var content = responseMessage.Content;
+                var content = responseMessage.Content.ReadAsStringAsync().Result;
+                tareas = JsonConvert.DeserializeObject<List<TareaAPI>>(content) ?? new List<TareaAPI>();
             }
-            return tareaViewModel;
+            List<TareaViewModel> resultado = new List<TareaViewModel>();
+            foreach (var tarea in tareas)
+            {
+                resultado.Add(Convertir(tarea));
+            }
+            return resultado;
+        }
+
+        public TareaViewModel UpdateTarea(TareaViewModel tarea)
+        {
+            _repository.Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            HttpResponseMessage response = _repository.PutResponse("api/tarea", Convertir(tarea));
+            if (response.IsSuccessStatusCode)
+            {
+                var content = response.Content.ReadAsStringAsync().Result;
+                tarea = Convertir(JsonConvert.DeserializeObject<TareaAPI>(content));
+            }
+            return tarea;
+        }
+
+        public List<TareaViewModel> GetTareasPersonales(int usuarioId)
+        {
+            _repository.Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            HttpResponseMessage responseMessage = _repository.GetResponse($"api/tarea/Usuario/{usuarioId}");
+            List<TareaAPI> tareas = new List<TareaAPI>();
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                var content = responseMessage.Content.ReadAsStringAsync().Result;
+                tareas = JsonConvert.DeserializeObject<List<TareaAPI>>(content);
+            }
+            List<TareaViewModel> resultado = new List<TareaViewModel>();
+            foreach (var tarea in tareas)
+            {
+                resultado.Add(Convertir(tarea));
+            }
+            return resultado;
+        }
+
+        public List<TareaViewModel> GetTareasPorEquipo(int equipoId)
+        {
+            _repository.Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+            HttpResponseMessage responseMessage = _repository.GetResponse($"api/tarea/Equipo/{equipoId}");
+            List<TareaAPI> tareas = new List<TareaAPI>();
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                var content = responseMessage.Content.ReadAsStringAsync().Result;
+                tareas = JsonConvert.DeserializeObject<List<TareaAPI>>(content);
+            }
+            List<TareaViewModel> resultado = new List<TareaViewModel>();
+            foreach (var tarea in tareas)
+            {
+                resultado.Add(Convertir(tarea));
+            }
+            return resultado;
         }
     }
 }

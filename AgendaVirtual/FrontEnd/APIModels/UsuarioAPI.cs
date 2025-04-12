@@ -1,4 +1,4 @@
-﻿namespace FrontEnd.APIModels
+namespace FrontEnd.APIModels
 {
     public class UsuarioAPI
     {
@@ -9,7 +9,6 @@
         public string Correo { get; set; } = null!;
 
         public string Contrasena { get; set; } = null!;
-
 
         public string Rol { get; set; } = null!;
 

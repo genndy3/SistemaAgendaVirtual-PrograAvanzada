@@ -20,8 +20,7 @@ namespace BackEnd.Controllers
         [HttpGet]
         public ActionResult Get()
         {
-            var result = _usuarioService.GetAll();
-            return Ok(result);
+            return Ok(_usuarioService.GetAll());
         }
 
         // GET api/<UsuarioController>/5

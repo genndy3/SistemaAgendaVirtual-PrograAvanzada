@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -27,37 +27,33 @@ namespace DAL.Implementations
 
                 var param = new SqlParameter[]
                 {
-
-                new SqlParameter()
-                {
-                    ParameterName = "@id_usuario",
-                    SqlDbType = System.Data.SqlDbType.NVarChar,
-                    Value = usuario.IdUsuario
-                },
-                new SqlParameter()
-                {
-                    ParameterName = "@nombre",
-                    SqlDbType = System.Data.SqlDbType.NVarChar,
-                    Value = usuario.Nombre
-                },
-                new SqlParameter()
-                {
-                    ParameterName = "@correo",
-                    SqlDbType = System.Data.SqlDbType.NVarChar,
-                    Value = usuario.Correo
-                },
-                new SqlParameter()
-                {
-                    ParameterName = "@rol",
-                    SqlDbType = System.Data.SqlDbType.NVarChar,
-                    Value = usuario.Rol
-                }
+                    new SqlParameter()
+                    {
+                        ParameterName = "@id_usuario",
+                        SqlDbType = System.Data.SqlDbType.NVarChar,
+                        Value = usuario.IdUsuario
+                    },
+                    new SqlParameter()
+                    {
+                        ParameterName = "@nombre",
+                        SqlDbType = System.Data.SqlDbType.NVarChar,
+                        Value = usuario.Nombre
+                    },
+                    new SqlParameter()
+                    {
+                        ParameterName = "@correo",
+                        SqlDbType = System.Data.SqlDbType.NVarChar,
+                        Value = usuario.Correo
+                    },
+                    new SqlParameter()
+                    {
+                        ParameterName = "@rol",
+                        SqlDbType = System.Data.SqlDbType.NVarChar,
+                        Value = usuario.Rol
+                    }
                 };
 
-                _context
-                    .Database
-                    .ExecuteSqlRaw(sql, param);
-
+                _context.Database.ExecuteSqlRaw(sql, param);
                 return true;
             }
             catch (Exception)
@@ -74,17 +70,15 @@ namespace DAL.Implementations
 
                 var param = new SqlParameter[]
                 {
-
-            new SqlParameter()
-            {
-                ParameterName = "@id_usuario",
-                SqlDbType = System.Data.SqlDbType.NVarChar,
-                Value = usuario.IdUsuario
-            }
+                    new SqlParameter()
+                    {
+                        ParameterName = "@id_usuario",
+                        SqlDbType = System.Data.SqlDbType.NVarChar,
+                        Value = usuario.IdUsuario
+                    }
                 };
 
                 _context.Database.ExecuteSqlRaw(sql, param);
-
                 return true;
             }
             catch (Exception ex)
@@ -94,5 +88,19 @@ namespace DAL.Implementations
             }
         }
 
+        // Método de la rama feature/equipos-(frontend)
+        public int GetIdUser(string id)
+        {
+            try
+            {
+                var usuario = _context.Usuarios.FirstOrDefault(u => u.IdIdentity == id);
+                return usuario?.IdUsuario ?? 0;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error al ejecutar la consulta: {ex.Message}");
+                return 0;
+            }
+        }
     }
 }
