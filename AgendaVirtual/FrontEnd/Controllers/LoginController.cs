@@ -5,6 +5,10 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Newtonsoft.Json;
+using System.Net.Http;
+using System.Text;
+using FrontEnd.Helpers.Implementations;
 
 namespace FrontEnd.Controllers
 {
@@ -77,6 +81,34 @@ namespace FrontEnd.Controllers
             {
 
                 throw;
+            }
+        }
+
+        // GET: Mostrar la vista del formulario de registro
+        public IActionResult Register()
+        {
+            return View(new UserViewModel());
+        }
+
+        // POST: Enviar datos al backend para registrar al usuario
+        [HttpPost]
+        public async Task<IActionResult> Register(UserViewModel user)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(user);
+            }
+
+            try
+            {
+                _securityHelper.Register(user.UserName, user.Email, user.Password);
+
+                    return RedirectToAction("Login", "Login");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = "Ocurrió un error inesperado. " + ex.Message;
+                return View(user);
             }
         }
     }
