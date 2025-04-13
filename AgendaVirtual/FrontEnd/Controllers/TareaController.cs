@@ -163,5 +163,26 @@ namespace FrontEnd.Controllers
                 return View();
             }
         }
+
+        public ActionResult Calendario(DateTime? fecha)
+        {
+            int idUsuario = GetUserIdFromToken();
+            if (idUsuario == -1)
+            {
+                return RedirectToAction("Login", "Login");
+            }
+
+            _tareaHelper.Token = HttpContext.Session.GetString("Token");
+            var result = _tareaHelper.GetTareasPersonales(idUsuario);
+
+            // Pasa el idUsuario a la vista
+            ViewBag.IdUsuario = idUsuario;
+
+            // Pasa la fecha seleccionada (o la actual si no se especifica)
+            ViewBag.FechaSeleccionada = fecha ?? DateTime.Now;
+
+            return View(result);
+        }
+
     }
 }
