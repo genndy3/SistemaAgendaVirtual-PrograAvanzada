@@ -11,25 +11,29 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <style>
         body {
+            margin: 0;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
         }
 
-        .content {
+        .main-content {
             flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         footer {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
             background-color: #162a6a;
             color: white;
+            text-align: center;
+            padding: 10px 0;
         }
 
         .icon-container {
             text-align: center;
+            margin: 0 20px;
         }
 
             .icon-container img {
@@ -39,48 +43,52 @@
     </style>
 </head>
 <body>
+    <!-- Header -->
     <div class="d-flex flex-row mb-3 p-3 align-items-center flex-wrap">
-        <div class="p-2" style="width: 80px; max-width: 100%; flex-shrink: 0;">
-            <img src="\img\timely_logo.png" class="img-fluid" alt="Timely Logo">
+        <div class="p-2" style="width: 80px;">
+            <img src="/img/timely_logo.png" class="img-fluid" alt="Timely Logo">
         </div>
-
         <div class="p-2">
             <h1 class="mt-2 text-center text-sm-start">TIMELY</h1>
         </div>
     </div>
 
-    <div class="d-flex justify-content-center">
-        <div class="d-flex flex-row mb-3 p-3 align-items-center flex-wrap">
-
-            <div class="icon-container p-2" style="width: 200px; max-width: 100%; flex-shrink: 0;">
+    <!-- Contenido principal centrado -->
+    <div class="main-content">
+        <div class="d-flex flex-row flex-wrap justify-content-center align-items-center">
+            <div class="icon-container p-2" style="width: 200px;">
                 <a href="@Url.Action("Index", "Tarea")" class="text-decoration-none text-dark">
-                    <img src="\img\tasks.png" class="img-fluid" alt="Tareas">
+                    <img src="/img/tasks.png" class="img-fluid" alt="Tareas">
                     <hr />
                     <h5>Tareas</h5>
                 </a>
             </div>
 
-            <div class="icon-container p-2" style="width: 200px; max-width: 100%; flex-shrink: 0;">
-                <img src="\img\calendario.png" class="img-fluid" alt="Calendario">
+            <div class="icon-container p-2" style="width: 200px;">
+                <a href="@Url.Action("Calendario", "Tarea")" class="text-decoration-none text-dark">
+                <img src="/img/calendario.png" class="img-fluid" alt="Calendario">
                 <h5>Calendario</h5>
+                </a>
             </div>
 
-            <div class="icon-container p-2" style="width: 200px; max-width: 100%; flex-shrink: 0;">
+            <div class="icon-container p-2" style="width: 200px;">
                 <a href="@Url.Action("Index", "Equipo")" class="text-decoration-none text-dark">
-                    <img src="\img\equipo.png" class="img-fluid" alt="Equipo">
+                    <img src="/img/equipo.png" class="img-fluid" alt="Equipo">
                     <h5>Equipos</h5>
                 </a>
             </div>
         </div>
     </div>
 
-    <!-- PARA PRUEBAS ADMIN -->
-    <div class="text-center">
+    <!-- Botón admin -->
+    <div class="text-center mb-3">
         <a href="@Url.Action("AdminDashboard", "Admin")" class="btn btn-primary">Ir a Admin</a>
     </div>
 
-    <footer class="text-center p-2" style="background-color: #162a6a; color: white;">
+    <!-- Footer -->
+    <footer>
         <p>&copy; 2025 - Derechos Reservados</p>
     </footer>
 </body>
+
 </html>
