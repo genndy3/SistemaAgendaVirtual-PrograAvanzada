@@ -1,4 +1,5 @@
-﻿using FrontEnd.Helpers.Interfaces;
+﻿using FrontEnd.Helpers.Implementations;
+using FrontEnd.Helpers.Interfaces;
 using FrontEnd.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,12 +12,14 @@ namespace FrontEnd.Controllers
         IEquipoHelper _equipoHelper;
         IUsuarioHelper _usuariosHelper;
         IUsuarioEquipoHelper _usuarioEquipoHelper;
+        ITareaHelper _tareaHelper;
 
-        public AdminController(IEquipoHelper equipoHelper, IUsuarioHelper usuariosHelper, IUsuarioEquipoHelper usuarioEquipoHelper)
+        public AdminController(IEquipoHelper equipoHelper, IUsuarioHelper usuariosHelper, IUsuarioEquipoHelper usuarioEquipoHelper, ITareaHelper tareaHelper)
         {
             _equipoHelper = equipoHelper;
             _usuariosHelper = usuariosHelper;
             _usuarioEquipoHelper = usuarioEquipoHelper;
+            _tareaHelper = tareaHelper;
         }
 
         // GET: AdminController
@@ -29,6 +32,11 @@ namespace FrontEnd.Controllers
         {
             return View();
         }
+
+
+        //****************************************************************************************************//
+        //___________________________________________ADMINISTRACION EQUIPOS___________________________________//
+        //****************************************************************************************************//
 
         public IActionResult admEquipos()
         {
@@ -54,6 +62,7 @@ namespace FrontEnd.Controllers
 
             return View(equipos);
         }
+
         [HttpGet]
         public IActionResult GetEquipos()
         {
@@ -346,9 +355,161 @@ namespace FrontEnd.Controllers
 
             return idUsuario;
         }
+
+
+
+
+        //****************************************************************************************************//
+        //___________________________________________ADMINISTRACION TAREAS____________________________________//
+        //****************************************************************************************************//
+
+
         public IActionResult admTareas()
         {
-            return View();
+            {
+                int idUsuario = GetUserIdFromToken2();
+                if (idUsuario == -1)
+                {
+                    return RedirectToAction("Login", "Login");
+                }
+
+                _tareaHelper.Token = HttpContext.Session.GetString("Token");
+                var result = _tareaHelper.GetTareasPersonales(idUsuario);
+
+                // Pasa el idUsuario a la vista
+                ViewBag.IdUsuario = idUsuario;
+
+                return View(result);
+            }
+
         }
+
+        public int GetUserIdFromToken2()
+        {
+            var token = HttpContext.Session.GetString("Token");
+            if (string.IsNullOrEmpty(token))
+            {
+                return -1;
+            }
+
+            var parts = token.Split('.');
+            if (parts.Length != 3)
+            {
+                return -1;
+            }
+
+            var payload = parts[1];
+            int padding = payload.Length % 4 == 0 ? 0 : 4 - payload.Length % 4;
+            payload = payload.PadRight(payload.Length + padding, '=');
+
+            var jsonBytes = Convert.FromBase64String(payload);
+            var json = Encoding.UTF8.GetString(jsonBytes);
+            var jsonObject = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+
+            if (!jsonObject.ContainsKey("id_usuario"))
+            {
+                return -1;
+            }
+
+            int idUsuario;
+            if (!int.TryParse(jsonObject["id_usuario"].ToString(), out idUsuario))
+            {
+                return -1;
+            }
+
+            return idUsuario;
+        }
+
+        // GET: TareaController
+        public ActionResult PorEquipo()
+        {
+            int idUsuario = GetUserIdFromToken();
+            if (idUsuario == -1)
+            {
+                return RedirectToAction("Login", "Login");
+            }
+
+            _tareaHelper.Token = HttpContext.Session.GetString("Token");
+            var result = _tareaHelper.GetTareasPorEquipo(idUsuario);
+            return View(result);
+        }
+
+
+
+        // GET: TareaController/Details/5
+        public IActionResult DetailsTarea(int id)
+        {
+            _tareaHelper.Token = HttpContext.Session.GetString("Token");
+            var tarea = _tareaHelper.getTarea(id);
+            return Json(tarea);
+        }
+
+
+
+        // POST: TareaController/Create
+        [HttpPost]
+        public ActionResult Create([FromBody] TareaViewModel tarea)
+        {
+            try
+            {
+                _tareaHelper.Token = HttpContext.Session.GetString("Token");
+                _tareaHelper.AddTarea(tarea);
+                return RedirectToAction(nameof(Index));
+            }
+            catch
+            {
+                return View();
+            }
+        }
+
+        // GET: TareaController/Edit/5
+        public ActionResult EditTarea(int id)
+        {
+            _tareaHelper.Token = HttpContext.Session.GetString("Token");
+            var tarea = _tareaHelper.getTarea(id);
+            return View(tarea);
+        }
+
+        // POST: TareaController/Edit/5
+        [HttpPut]
+        public IActionResult Edit([FromBody] TareaViewModel tarea)
+        {
+            try
+            {
+                _tareaHelper.Token = HttpContext.Session.GetString("Token");
+                _tareaHelper.UpdateTarea(tarea);
+                return Ok();
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
+
+        // GET: TareaController/Delete/5
+        public ActionResult DeleteTarea(int id)
+        {
+            _tareaHelper.Token = HttpContext.Session.GetString("Token");
+            var tarea = _tareaHelper.getTarea(id);
+            return View(tarea);
+        }
+
+        // POST: TareaController/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteConfirmed(int id)
+        {
+            try
+            {
+                _tareaHelper.Token = HttpContext.Session.GetString("Token");
+                _tareaHelper.DeleteTarea(id);
+                return RedirectToAction(nameof(admTareas));
+            }
+            catch
+            {
+                return View();
+            }
+        }
+
     }
 }
