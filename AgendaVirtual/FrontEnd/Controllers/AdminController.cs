@@ -13,13 +13,15 @@ namespace FrontEnd.Controllers
         IUsuarioHelper _usuariosHelper;
         IUsuarioEquipoHelper _usuarioEquipoHelper;
         ITareaHelper _tareaHelper;
+        ISecurityHelper _securityHelper;
 
-        public AdminController(IEquipoHelper equipoHelper, IUsuarioHelper usuariosHelper, IUsuarioEquipoHelper usuarioEquipoHelper, ITareaHelper tareaHelper)
+        public AdminController(IEquipoHelper equipoHelper, IUsuarioHelper usuariosHelper, IUsuarioEquipoHelper usuarioEquipoHelper, ITareaHelper tareaHelper, ISecurityHelper securityHelper)
         {
             _equipoHelper = equipoHelper;
             _usuariosHelper = usuariosHelper;
             _usuarioEquipoHelper = usuarioEquipoHelper;
             _tareaHelper = tareaHelper;
+            _securityHelper = securityHelper;
         }
 
         // GET: AdminController
@@ -28,11 +30,119 @@ namespace FrontEnd.Controllers
             return View();
         }
 
+        //****************************************************************************************************//
+        //___________________________________________ADMINISTRACION USUARIOS__________________________________//
+        //****************************************************************************************************//
+
         public IActionResult admUsuarios()
         {
-            return View();
+            return View(new UserViewModel());
         }
 
+        [HttpPost]
+        public async Task<IActionResult> crear(UserViewModel user)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(user);
+            }
+            try
+            {
+                _securityHelper.Register(user.UserName, user.Email, user.Password);
+
+                return RedirectToAction("admUsuarios", "Admin");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = "Ocurrió un error inesperado. " + ex.Message;
+                return View(user);
+            }
+        }
+
+
+        public IActionResult UpdateUsuario([FromBody] UserViewModel usuario)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                _usuariosHelper.Token = HttpContext.Session.GetString("Token");
+
+                if (string.IsNullOrEmpty(_usuariosHelper.Token))
+                {
+                    return Unauthorized("Token no válido");
+                }
+
+                if (usuario == null)
+                {
+                    return BadRequest("Datos de usuario no válidos");
+                }
+
+                // Conversión manual
+                var usuarioConvertido = new UsuarioViewModel
+                {
+                    Nombre = usuario.UserName,
+                    Correo = usuario.Email ?? "",
+                    Rol = "Usuario",
+                    FechaRegistro = DateTime.Now
+                };
+
+                var usuarioActualizado = _usuariosHelper.UpdateUsuario(usuarioConvertido);
+                return Ok(usuarioActualizado);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al actualizar usuario: {ex.Message}\n{ex.StackTrace}");
+                return StatusCode(500, new
+                {
+                    Message = "Error interno al actualizar el usuario",
+                    DetailedError = ex.Message,
+                    StackTrace = ex.StackTrace
+                });
+            }
+        }
+
+
+        [HttpDelete("DeleteUsuario/{id}")]
+        public IActionResult DeleteUsuario(int id)
+        {
+            try
+            {
+                _usuariosHelper.Token = HttpContext.Session.GetString("Token");
+
+                // 1. Verificar si el usuario existe
+                var usuario = _usuariosHelper.GetUsuario(id);
+                if (usuario == null)
+                {
+                    return NotFound(new
+                    {
+                        Success = false,
+                        Message = $"No se encontró el usuario con ID {id}"
+                    });
+                }
+
+                // 2. Eliminar el usuario
+                _usuariosHelper.DeleteUsuario(id);
+
+                return Ok(new
+                {
+                    Success = true,
+                    Message = $"Usuario {usuario.Nombre} eliminado correctamente"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    Success = false,
+                    Message = "Error interno al eliminar el usuario",
+                    Error = ex.Message
+                });
+            }
+        }
 
         //****************************************************************************************************//
         //___________________________________________ADMINISTRACION EQUIPOS___________________________________//
@@ -136,8 +246,6 @@ namespace FrontEnd.Controllers
             return Ok();
         }
 
-
-
         public ActionResult UsuariosNotInEquipo(int id)
         {
             _equipoHelper.Token = HttpContext.Session.GetString("Token");
@@ -182,16 +290,15 @@ namespace FrontEnd.Controllers
 
                 if (equipo.ParticipanteList.Any())
                 {
-                    // Agregar los nuevos participantes al equipo
+          
                     foreach (var participante in equipo.ParticipanteList)
                     {
                         var usuarioEquipo = new UsuarioEquipoViewModel
                         {
                             IdUsuario = participante.IdUsuario,
-                            IdEquipo = equipoCreado.IdEquipo  // Asegúrate de asignar el IdEquipo correcto
+                            IdEquipo = equipoCreado.IdEquipo 
                         };
 
-                        // Llamada al helper para agregar el participante
                         _usuarioEquipoHelper.addUsuarioEquipo(usuarioEquipo);
                         Console.WriteLine($"Participante agregado: {participante.IdUsuario}");
                         Console.WriteLine($"EQuipo agregado: {usuarioEquipo.IdEquipo}");
@@ -297,14 +404,12 @@ namespace FrontEnd.Controllers
             {
                 _equipoHelper.Token = HttpContext.Session.GetString("Token");
 
-                // Eliminar usuarios del equipo primero
                 var usuarios = _equipoHelper.GetUsuariosPorEquipo(id);
                 foreach (var usuario in usuarios)
                 {
                     _usuarioEquipoHelper.deleteUsuarioEquipo(usuario.IdUsuario, id);
                 }
 
-                // Luego eliminar el equipo
                 bool eliminado = _equipoHelper.DeleteEquipo(id);
 
                 if (eliminado)
@@ -376,7 +481,6 @@ namespace FrontEnd.Controllers
                 _tareaHelper.Token = HttpContext.Session.GetString("Token");
                 var result = _tareaHelper.GetTareasPersonales(idUsuario);
 
-                // Pasa el idUsuario a la vista
                 ViewBag.IdUsuario = idUsuario;
 
                 return View(result);
