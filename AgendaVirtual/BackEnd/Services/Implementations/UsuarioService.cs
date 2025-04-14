@@ -92,5 +92,7 @@ namespace BackEnd.Services.Implementations
             _unidadDeTrabajo.usuarioDAL.UpdateSP(Convertir(usuarioDTO));
             return usuarioDTO;
         }
+
+
     }
 }

@@ -23,6 +23,8 @@ builder.Services.AddScoped<ITareaHelper, TareaHelper>();
 builder.Services.AddScoped<IEquipoHelper, EquipoHelper>();
 builder.Services.AddScoped<IUsuarioHelper, UsuarioHelper>();
 builder.Services.AddScoped<IUsuarioEquipoHelper, UsuarioEquipoHelper>();
+builder.Services.AddScoped<IRecordatorioHelper, RecordatorioHelper>();
+builder.Services.AddScoped<IComentarioHelper, ComentarioHelper>();
 
 var app = builder.Build();
 
