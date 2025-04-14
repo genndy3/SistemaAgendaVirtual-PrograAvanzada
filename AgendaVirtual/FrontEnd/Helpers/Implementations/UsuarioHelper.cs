@@ -2,6 +2,8 @@ using FrontEnd.APIModels;
 using FrontEnd.Helpers.Interfaces;
 using FrontEnd.Models;
 using Newtonsoft.Json;
+using System.Net;
+using System.Net.Http.Headers;
 
 namespace FrontEnd.Helpers.Implementations
 {
@@ -53,8 +55,16 @@ namespace FrontEnd.Helpers.Implementations
 
         public void DeleteUsuario(int id)
         {
-            _repository.Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-            HttpResponseMessage response = _repository.DeleteResponse($"api/usuario/{id}");
+            _repository.Client.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
+
+            HttpResponseMessage response = _repository.DeleteResponse($"api/Usuario/{id}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = response.Content.ReadAsStringAsync().Result;
+                throw new Exception($"Error al eliminar usuario: {response.StatusCode} - {errorContent}");
+            }
         }
 
         public List<UsuarioViewModel> GetUsuarios()
@@ -79,28 +89,58 @@ namespace FrontEnd.Helpers.Implementations
 
         public UsuarioViewModel GetUsuario(int id)
         {
-            _repository.Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-            HttpResponseMessage responseMessage = _repository.GetResponse($"api/usuario/{id}");
-            UsuarioAPI usuario = new UsuarioAPI();
-            
-            if (responseMessage.IsSuccessStatusCode)
+            try
             {
-                var content = responseMessage.Content.ReadAsStringAsync().Result;
-                usuario = JsonConvert.DeserializeObject<UsuarioAPI>(content);
+                _repository.Client.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", Token);
+
+                HttpResponseMessage response = _repository.GetResponse($"api/usuario/{id}");
+
+                if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    return null;
+                }
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new Exception($"Error al obtener usuario: {response.StatusCode}");
+                }
+
+                var content = response.Content.ReadAsStringAsync().Result;
+                return Convertir(JsonConvert.DeserializeObject<UsuarioAPI>(content));
             }
-            return Convertir(usuario);
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en GetUsuario: {ex.Message}");
+                throw;
+            }
         }
 
         public UsuarioViewModel UpdateUsuario(UsuarioViewModel usuario)
         {
-            _repository.Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Token);
-            HttpResponseMessage response = _repository.PutResponse($"api/usuario/{usuario.IdUsuario}", Convertir(usuario));
-            if (response.IsSuccessStatusCode)
+            try
             {
+                _repository.Client.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", Token);
+
+                HttpResponseMessage response = _repository.PutResponse(
+                    $"api/usuario/{usuario.IdUsuario}",
+                    Convertir(usuario));
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorContent = response.Content.ReadAsStringAsync().Result;
+                    throw new Exception($"Error en la API: {response.StatusCode} - {errorContent}");
+                }
+
                 var content = response.Content.ReadAsStringAsync().Result;
-                usuario = Convertir(JsonConvert.DeserializeObject<UsuarioAPI>(content));
+                return Convertir(JsonConvert.DeserializeObject<UsuarioAPI>(content));
             }
-            return usuario;
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en UsuarioHelper.UpdateUsuario: {ex.Message}\n{ex.StackTrace}");
+                throw;
+            }
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿@{
+﻿@model FrontEnd.Models.UserViewModel
+
+@{
     ViewData["Title"] = "AdminUsuarios";
     Layout = null;
 }
@@ -9,6 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Usuarios - Timely</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         body {
             display: flex;
@@ -120,8 +123,8 @@
             position: fixed;
             top: 0;
             left: 0;
+            right: 0;
             bottom: 0;
-            width: 40%;
             background-color: rgba(0, 0, 0, 0.5);
             z-index: 1050;
             justify-content: center;
@@ -130,9 +133,10 @@
 
         .modal-content {
             background-color: white;
-            width: 100%;
+            width: 40%;
             padding: 20px;
-            height: 100%;
+            border-radius: 8px;
+            max-height: 80vh;
             overflow-y: auto;
         }
 
@@ -154,7 +158,8 @@
                 margin-bottom: 15px;
             }
 
-                .modal-body .form-group input {
+                .modal-body .form-group input, 
+                .modal-body .form-group select {
                     width: 100%;
                     padding: 10px;
                     border-radius: 5px;
@@ -194,43 +199,12 @@
                 background-color: #0056b3;
             }
 
-        .confirm-delete {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1051;
-            justify-content: center;
-            align-items: center;
+        .error-message {
+            color: red;
+            font-size: 0.8em;
+            margin-top: 5px;
         }
-
-        .confirm-delete-content {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-        }
-
-            .confirm-delete-content button {
-                padding: 10px 15px;
-                margin: 10px;
-                border-radius: 5px;
-            }
-
-        .btn-aceptar {
-            background-color: #233671;
-            color: white;
-            border: none;
-        }
-
-            .btn-aceptar:hover {
-                background-color: #0056b3;
-            }
     </style>
-
 </head>
 <body>
     <div class="d-flex flex-row mb-3 p-3 align-items-center flex-wrap">
@@ -263,37 +237,23 @@
                     <div class="tab-line"></div>
                 </a>
             </div>
-            <img src="\img\crear.png" alt="Icono" style="width: 30px; height: auto;" onclick="openModal('create')" />
+            <button class="border-0" style="background:none" onclick="openModal('create')">
+                <i class="bi bi-plus-circle text-lg fs-3 text-blue"></i>
+            </button>
         </div>
         <hr class="linea-divisora">
-        <table class="table">
+        <table class="table" id="usuariosTable">
             <thead>
                 <tr>
+                    <th>ID</th>
                     <th>Nombre</th>
-                    <th>Apellido</th>
                     <th>Correo Electrónico</th>
+                    <th>Rol</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td>adminMade</td>
-                    <td>Araya</td>
-                    <td>made@gmail.com</td>
-                    <td class="actions">
-                        <img src="\img\editar.png" alt="Editar" onclick="openModal('edit', 'adminMade')" />
-                        <img src="\img\eliminar.png" alt="Eliminar" onclick="showConfirmDelete('adminMade')" />
-                    </td>
-                </tr>
-                <tr>
-                    <td>Ana</td>
-                    <td>López</td>
-                    <td>ana@gmail.com</td>
-                    <td class="actions">
-                        <img src="\img\editar.png" alt="Editar" onclick="openModal('edit', 'Ana')" />
-                        <img src="\img\eliminar.png" alt="Eliminar" onclick="showConfirmDelete('Ana')" />
-                    </td>
-                </tr>
+            <tbody id="usuariosTableBody">
+                <!--se carga dinamicamente -->
             </tbody>
         </table>
     </div>
@@ -305,34 +265,30 @@
                 <h3>Crear Usuario</h3>
             </div>
             <div class="modal-body">
-                <div class="form-group">
-                    <label for="nombre">Nombre:</label>
-                    <input type="text" id="nombre" class="form-control" placeholder="Ingresa el nombre">
-                </div>
-                <div class="form-group">
-                    <label for="apellido">Apellido:</label>
-                    <input type="text" id="apellido" class="form-control" placeholder="Ingresa el apellido">
-                </div>
-                <div class="form-group">
-                    <label for="correo">Correo Electrónico:</label>
-                    <input type="email" id="correo" class="form-control" placeholder="Ingresa el correo electrónico">
-                </div>
-                <div class="form-group">
-                    <label for="contraseña">Contraseña:</label>
-                    <input type="password" id="contraseña" class="form-control" placeholder="Ingresa la contraseña">
-                </div>
-                <div class="form-group">
-                    <label for="confirmarContraseña">Confirmar Contraseña:</label>
-                    <input type="password" id="confirmarContraseña" class="form-control" placeholder="Confirma la contraseña">
-                </div>
+                <form id="createUserForm" class="p-4 rounded bg-white">
+                    <div class="form-group">
+                        <label for="createUserName" class="control-label">Usuario</label>
+                        <input id="createUserName" name="UserName" class="form-control rounded-3 border-1" style="border-color: #162a6a;" required />
+                        <span class="text-danger" id="createUserNameError"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="createEmail" class="control-label">Email</label>
+                        <input id="createEmail" name="Email" type="email" class="form-control rounded-3 border-1" style="border-color: #162a6a;" required />
+                        <span class="text-danger" id="createEmailError"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="createPassword" class="control-label">Contraseña</label>
+                        <input id="createPassword" name="Password" type="password" class="form-control rounded-3 border-1" style="border-color: #162a6a;" required />
+                        <span class="text-danger" id="createPasswordError"></span>
+                    </div>
+                </form>
             </div>
             <div class="modal-footer">
                 <button class="btn-cancelar" onclick="closeModal('create')">Cancelar</button>
-                <button class="btn-crear" onclick="closeModal('create')">Crear</button>
+                <button class="btn-crear" onclick="crearUsuario()">Crear</button>
             </div>
         </div>
     </div>
-
 
     <!-- Modal Editar Usuario -->
     <div class="modal" id="editModal">
@@ -341,67 +297,201 @@
                 <h3>Editar Usuario</h3>
             </div>
             <div class="modal-body">
-                <div class="form-group">
-                    <label for="editNombre">Nombre:</label>
-                    <input type="text" id="editNombre" class="form-control" placeholder="Ingresa el nombre">
-                </div>
-                <div class="form-group">
-                    <label for="editApellido">Apellido:</label>
-                    <input type="text" id="editApellido" class="form-control" placeholder="Ingresa el apellido">
-                </div>
-                <div class="form-group">
-                    <label for="editCorreo">Correo Electrónico:</label>
-                    <input type="email" id="editCorreo" class="form-control" placeholder="Ingresa el correo electrónico">
-                </div>
+                <form id="editUserForm" class="p-4 rounded bg-white">
+                    <input type="hidden" id="editIdUsuario">
+                    <div class="form-group">
+                        <label for="editUserName" class="control-label">Usuario</label>
+                        <input id="editUserName" name="UserName" class="form-control rounded-3 border-1" style="border-color: #162a6a;" required />
+                        <span class="text-danger" id="editUserNameError"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="editEmail" class="control-label">Email</label>
+                        <input id="editEmail" name="Email" type="email" class="form-control rounded-3 border-1" style="border-color: #162a6a;" required />
+                        <span class="text-danger" id="editEmailError"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="editRol" class="control-label">Rol</label>
+                        <select id="editRol" name="Rol" class="form-control rounded-3 border-1" style="border-color: #162a6a;">
+                            <option value="Administrador">Administrador</option>
+                            <option value="Usuario">Usuario</option>
+                        </select>
+                        <span class="text-danger" id="editRolError"></span>
+                    </div>
+                </form>
             </div>
             <div class="modal-footer">
                 <button class="btn-cancelar" onclick="closeModal('edit')">Cancelar</button>
-                <button class="btn-crear" onclick="closeModal('edit')">Guardar</button>
+                <button class="btn-crear" onclick="actualizarUsuario()">Guardar</button>
             </div>
         </div>
     </div>
 
-    <!-- Ventana de confirmación de eliminación -->
-    <div class="confirm-delete" id="confirmDeleteModal">
-        <div class="confirm-delete-content">
-            <h3>¿Estás seguro de eliminar este usuario?</h3>
-            <button class="btn-cancelar" onclick="closeConfirmDelete()">Cancelar</button>
-            <button class="btn-aceptar" onclick="deleteUser()">Aceptar</button>
-        </div>
-    </div>
-
-    <footer class="text-center p-2" style="background-color: #162a6a; color: white;">
-        <p>&copy; 2025 - Derechos Reservados</p>
-    </footer>
-
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script>
-        function openModal(type, userName = '') {
-            if (type === 'create') {
-                document.getElementById('createModal').style.display = 'flex';
-            } else if (type === 'edit') {
-                document.getElementById('editModal').style.display = 'flex';
+        function openModal(modalType) {
+            document.getElementById(modalType + 'Modal').style.display = 'flex';
+        }
+
+        function closeModal(modalType) {
+            document.getElementById(modalType + 'Modal').style.display = 'none';
+        }
+
+        $(document).ready(function() {
+            cargarUsuarios();
+        });
+
+        function cargarUsuarios() {
+            $.ajax({
+                url: '@Url.Action("GetUsuarios", "Admin")',
+                type: 'GET',
+                success: function(usuarios) {
+                    var tbody = $('#usuariosTableBody');
+                    tbody.empty();
+
+        usuarios.forEach(function(usuario) {
+            var row = `<tr>
+                <td>${usuario.idUsuario}</td>
+                <td>${usuario.nombre}</td>
+                <td>${usuario.correo}</td>
+                <td>${usuario.rol}</td>
+                <td class="actions">
+                                <img src="/img/editar.png" alt="Editar"
+                                     onclick="editarUsuario(${usuario.idUsuario}, '${usuario.nombre}', '${usuario.correo}', '${usuario.rol}')"
+                                     style="cursor:pointer; width:20px; margin-right:10px;" />
+
+                                <form onsubmit="return confirm('¿Estás seguro de eliminar a ${usuario.nombre}?')"
+                                      action="@Url.Action("admUsuarios", "Admin")"
+                                      method="post"
+                                      class="d-inline">
+                                    <input type="hidden" name="id" value="${usuario.idUsuario}" />
+                                     @Html.AntiForgeryToken()
+                                    <button type="submit" class="bg-transparent border-0">
+                                        <img src="/img/eliminar.png" alt="Eliminar"
+                                             style="cursor:pointer; width:20px;" />
+                                    </button>
+                                </form>
+                            </td>
+            </tr>`;
+            tbody.append(row);
+        });
+                },
+                error: function(xhr) {
+                    console.error("Error al cargar usuarios:", xhr.responseText);
+                }
+            });
+        }
+
+        function crearUsuario() {
+            var formData = {
+                UserName: $('#createUserName').val(),
+                Email: $('#createEmail').val(),
+                Password: $('#createPassword').val()
+            };
+
+            $.ajax({
+                url: '@Url.Action("crear", "Admin")',
+                type: 'POST',
+                data: formData,
+                success: function() {
+                    closeModal('create');
+                    $('#createUserForm')[0].reset();
+                    cargarUsuarios();
+                },
+                error: function(xhr) {
+                    if (xhr.status === 400) {
+                        var errors = xhr.responseJSON;
+                        $('#createUserNameError').text(errors.UserName ? errors.UserName[0] : '');
+                        $('#createEmailError').text(errors.Email ? errors.Email[0] : '');
+                        $('#createPasswordError').text(errors.Password ? errors.Password[0] : '');
+                    }
+                }
+            });
+        }
+
+        function editarUsuario(id, nombre, correo, rol) {
+            $('#editIdUsuario').val(id);
+            $('#editUserName').val(nombre);
+            $('#editEmail').val(correo);
+            $('#editRol').val(rol);
+            openModal('edit');
+        }
+
+        function actualizarUsuario() {
+            var formData = {
+                IdUsuario: parseInt($('#editIdUsuario').val()),
+                UserName: $('#editUserName').val(),
+                Email: $('#editEmail').val(),
+                Rol: $('#editRol').val()
+            };
+
+            $.ajax({
+                url: '@Url.Action("UpdateUsuario", "Admin")',
+                type: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify(formData),
+                success: function(response) {
+                    closeModal('edit');
+                    cargarUsuarios();
+                    $('#editUserNameError').text('');
+                    $('#editEmailError').text('');
+                    $('#editRolError').text('');
+                },
+                error: function(xhr) {
+                    if (xhr.status === 400) {
+                        try {
+                            var errors = JSON.parse(xhr.responseText);
+                            $('#editUserNameError').text(errors.UserName ? errors.UserName[0] : '');
+                            $('#editEmailError').text(errors.Email ? errors.Email[0] : '');
+                            $('#editRolError').text(errors.Rol ? errors.Rol[0] : '');
+                        } catch (e) {
+                            console.error("Error al parsear respuesta:", e);
+                        }
+                    }
+                }
+            });
+        }
+
+        function eliminarUsuario(id, nombre) {
+            if (confirm(`¿Estás seguro de eliminar al usuario ${nombre}?`)) {
+                const $icono = $(`i[onclick*="eliminarUsuario(${id}"]`);
+                $icono.replaceWith('<i class="bi bi-trash-fill text-danger"><span class="spinner-border spinner-border-sm"></span></i>');
+
+                $.ajax({
+                    url: '@Url.Action("DeleteUsuario", "Admin")/' + id,
+                    type: 'DELETE',
+                    success: function(response) {
+                        if (response.Success) {
+                            cargarUsuarios();
+                            alert(response.Message);
+                        } else {
+                            alert(response.Message || "No se pudo eliminar el usuario");
+                        }
+                    },
+                    error: function(xhr) {
+                        let errorMsg = "Error al eliminar: ";
+
+                        if (xhr.status === 404) {
+                            errorMsg += "El usuario ya no existe";
+                            cargarUsuarios(); 
+                        } else {
+                            try {
+                                const errorResponse = JSON.parse(xhr.responseText);
+                                errorMsg += errorResponse.Message || xhr.statusText;
+                            } catch {
+                                errorMsg += xhr.statusText;
+                            }
+                        }
+
+                        alert(errorMsg);
+                    },
+                    complete: function() {
+                        $icono.replaceWith(
+                            `<i class="bi bi-trash-fill text-danger"
+                              onclick="eliminarUsuario(${id}, '${nombre}')"></i>`
+                        );
+                    }
+                });
             }
-        }
-
-        function closeModal(type) {
-            if (type === 'create') {
-                document.getElementById('createModal').style.display = 'none';
-            } else if (type === 'edit') {
-                document.getElementById('editModal').style.display = 'none';
-            }
-        }
-
-        function showConfirmDelete(userName) {
-            document.getElementById('confirmDeleteModal').style.display = 'flex';
-        }
-
-        function closeConfirmDelete() {
-            document.getElementById('confirmDeleteModal').style.display = 'none';
-        }
-
-        function deleteUser() {
-            alert('Usuario eliminado');
-            closeConfirmDelete();
         }
     </script>
 </body>
