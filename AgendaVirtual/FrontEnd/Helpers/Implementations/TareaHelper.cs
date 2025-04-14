@@ -38,6 +38,7 @@ namespace FrontEnd.Helpers.Implementations
             if (response.IsSuccessStatusCode)
             {
                 var content = response.Content.ReadAsStringAsync().Result;
+                tarea = Convertir(JsonConvert.DeserializeObject<TareaAPI>(content));
             }
             return tarea;
         }

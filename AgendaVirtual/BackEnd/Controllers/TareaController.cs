@@ -35,9 +35,10 @@ namespace BackEnd.Controllers
 
         // POST api/<EquipoController>
         [HttpPost]
-        public void Post([FromBody] TareaDTO tarea)
+        public TareaDTO Post([FromBody] TareaDTO tarea)
         {
-            _tareaService.Add(tarea);
+            TareaDTO tareaDTO = _tareaService.Add(tarea);
+            return tareaDTO;
         }
 
         // PUT api/<EquipoController>/5
@@ -65,5 +66,7 @@ namespace BackEnd.Controllers
         {
             return Ok(_tareaService.GetAllByEquipoAndUser(idUsuario));
         }
+
+
     }
 }

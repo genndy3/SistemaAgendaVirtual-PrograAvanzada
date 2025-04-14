@@ -11,5 +11,6 @@ namespace DAL.Interfaces
     {
         public IEnumerable<Tarea> getAllByUser(int idUsuario);
         public IEnumerable<Tarea> getAllByEquipoAndUser(int idUsuario);
+        public Tarea AgregarTarea(Tarea tarea);
     }
 }

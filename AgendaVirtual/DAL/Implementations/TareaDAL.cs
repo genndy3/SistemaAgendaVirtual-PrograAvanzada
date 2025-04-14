@@ -35,5 +35,12 @@ namespace DAL.Implementations
 
             return tareas;
         }
+
+        public Tarea AgregarTarea(Tarea tarea)
+        {
+            _context.Tareas.Add(tarea);
+            _context.SaveChanges();
+            return tarea;
+        }
     }
 }

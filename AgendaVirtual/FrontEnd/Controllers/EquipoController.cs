@@ -1,4 +1,4 @@
-﻿using System.Text;
+﻿ using System.Text;
 using FrontEnd.Helpers.Implementations;
 using FrontEnd.Helpers.Interfaces;
 using FrontEnd.Models;
@@ -165,16 +165,14 @@ namespace FrontEnd.Controllers
 
                 if (equipo.ParticipanteList.Any())
                 {
-                    // Agregar los nuevos participantes al equipo
                     foreach (var participante in equipo.ParticipanteList)
                     {
                         var usuarioEquipo = new UsuarioEquipoViewModel
                         {
                             IdUsuario = participante.IdUsuario,
-                            IdEquipo = equipoCreado.IdEquipo  // Asegúrate de asignar el IdEquipo correcto
+                            IdEquipo = equipoCreado.IdEquipo
                         };
 
-                        // Llamada al helper para agregar el participante
                         _usuarioEquipoHelper.addUsuarioEquipo(usuarioEquipo);
                         Console.WriteLine($"Participante agregado: {participante.IdUsuario}");
                         Console.WriteLine($"EQuipo agregado: {usuarioEquipo.IdEquipo}");
@@ -266,7 +264,7 @@ namespace FrontEnd.Controllers
         }
 
         // GET: EquipoController/Delete/5
-        public ActionResult Delete(int id)
+        public ActionResult Delete()
         {
             return View();
         }
@@ -274,10 +272,12 @@ namespace FrontEnd.Controllers
         // POST: EquipoController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult DeleteConfirmed(int id)
         {
             try
             {
+                _equipoHelper.Token = HttpContext.Session.GetString("Token");
+                _equipoHelper.DeleteEquipo(id);
                 return RedirectToAction(nameof(Index));
             }
             catch

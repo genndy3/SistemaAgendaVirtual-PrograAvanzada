@@ -9,6 +9,6 @@ namespace DAL.Interfaces
 {
     public interface IComentarioDAL : IDALGenerico<Comentario>
     {
-
+        IEnumerable<Comentario> GetComentariosByTarea(int idTarea);
     }
 }

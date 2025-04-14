@@ -15,5 +15,19 @@ namespace DAL.Implementations
         {
             _context = context;
         }
+
+        public IEnumerable<Recordatorio> getRecordatoriosByTarea(int idTarea)
+        {
+            return _context.Recordatorios
+                .Where(r => r.IdTarea == idTarea)
+                .ToList();
+        }
+
+        public IEnumerable<Recordatorio> getRecordatoriosNotInTarea(int idTarea)
+        {
+            return _context.Recordatorios
+                .Where(r => r.IdTarea != idTarea)
+                .ToList();
+        }
     }
 }

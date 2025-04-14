@@ -75,5 +75,27 @@ namespace BackEnd.Services.Implementations
             _unidadDeTrabajo.Complete();
             return recordatorioDTO;
         }
+
+        public List<RecordatorioDTO> getAllByTarea(int idTarea)
+        {
+            var recordatorios = _unidadDeTrabajo.recordatorioDAL.getRecordatoriosByTarea(idTarea);
+            List<RecordatorioDTO> recordatoriosDTO = new List<RecordatorioDTO>();
+            foreach (var recordatorio in recordatorios)
+            {
+                recordatoriosDTO.Add(Convertir(recordatorio));
+            }
+            return recordatoriosDTO;
+        }
+
+        public List<RecordatorioDTO> getAllNotInTarea(int idTarea)
+        {
+            var recordatorios = _unidadDeTrabajo.recordatorioDAL.getRecordatoriosNotInTarea(idTarea);
+            List<RecordatorioDTO> recordatoriosDTO = new List<RecordatorioDTO>();
+            foreach (var recordatorio in recordatorios)
+            {
+                recordatoriosDTO.Add(Convertir(recordatorio));
+            }
+            return recordatoriosDTO;
+        }
     }
 }

@@ -10,5 +10,8 @@ namespace BackEnd.Services.Interfaces
         RecordatorioDTO Add(RecordatorioDTO recordatorioDTO);
         RecordatorioDTO Update(RecordatorioDTO recordatorioDTO);
         RecordatorioDTO Delete(int id);
+
+        List<RecordatorioDTO> getAllByTarea(int idTarea);
+        List<RecordatorioDTO> getAllNotInTarea(int idTarea);
     }
 }

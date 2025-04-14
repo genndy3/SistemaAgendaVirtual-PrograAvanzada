@@ -9,5 +9,6 @@ namespace BackEnd.Services.Interfaces
         ComentarioDTO Add(ComentarioDTO comentarioDTO);
         ComentarioDTO Update(ComentarioDTO comentarioDTO);
         ComentarioDTO Delete(int id);
+        List<ComentarioDTO> GetAllByTarea(int idTarea);
     }
 }

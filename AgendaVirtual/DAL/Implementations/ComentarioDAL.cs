@@ -15,6 +15,13 @@ namespace DAL.Implementations
         {
             _context = context;
         }
+
+        public IEnumerable<Comentario> GetComentariosByTarea(int idTarea)
+        {
+            return _context.Comentarios
+                .Where(c => c.IdTarea == idTarea)
+                .ToList();
+        }
     }
 
 }

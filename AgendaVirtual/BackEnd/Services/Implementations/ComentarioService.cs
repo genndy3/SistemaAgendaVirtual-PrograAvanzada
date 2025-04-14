@@ -74,6 +74,17 @@ namespace BackEnd.Services.Implementations
             _unidadDeTrabajo.Complete();
             return comentarioDTO;
         }
-       
+
+        public List<ComentarioDTO> GetAllByTarea(int idTarea)
+        {
+            var comentarios = _unidadDeTrabajo.comentarioDAL.GetComentariosByTarea(idTarea);
+            List<ComentarioDTO> comentarioDTO = new List<ComentarioDTO>();
+            foreach (var comentario in comentarios)
+            {
+                comentarioDTO.Add(Convertir(comentario));
+            }
+            return comentarioDTO;
+        }
+
     }
 }

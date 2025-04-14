@@ -51,5 +51,17 @@ namespace BackEnd.Controllers
         {
             _recordatorioService.Delete(id);
         }
+
+        [HttpGet("Tarea/{idTarea}")]
+        public ActionResult GetAllByTarea(int idTarea)
+        {
+            return Ok(_recordatorioService.getAllByTarea(idTarea));
+        }
+
+        [HttpGet("RecordatoriosNotIn/{idTarea}")]
+        public ActionResult GetAllNotInTarea(int idTarea)
+        {
+            return Ok(_recordatorioService.getAllNotInTarea(idTarea));
+        }
     }
 }
