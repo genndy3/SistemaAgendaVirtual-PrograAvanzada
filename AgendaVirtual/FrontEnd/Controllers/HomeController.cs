@@ -58,6 +58,11 @@ namespace FrontEnd.Controllers
 
         public IActionResult Index()
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Login");
+            }
+            else { 
             _recordatorioHelper.Token = HttpContext.Session.GetString("Token");
             _tareaHelper.Token = HttpContext.Session.GetString("Token");
             var recordatorios = _recordatorioHelper.GetRecordatorios();
@@ -77,8 +82,10 @@ namespace FrontEnd.Controllers
                 var tarea = tareas.FirstOrDefault(t => t.IdTarea == recordatorio.IdTarea);
                 recordatorio.TituloTarea = tarea?.Titulo ?? "Sin título"; 
             }
+            
 
             return View(recordatorios);
+            }
         }
 
         public IActionResult Privacy()
