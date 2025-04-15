@@ -22,7 +22,8 @@ namespace BackEnd.Services.Implementations
                 Correo = usuario.Correo,
                 Nombre = usuario.Nombre,
                 Rol = usuario.Rol,
-                FechaRegistro = usuario.FechaRegistro
+                FechaRegistro = usuario.FechaRegistro,
+                IdIdentity = usuario.IdIdentity
             };
         }
         Usuario Convertir(UsuarioDTO usuarioDTO)
@@ -34,7 +35,8 @@ namespace BackEnd.Services.Implementations
                 Correo = usuarioDTO.Correo,
                 Nombre = usuarioDTO.Nombre,
                 Rol = usuarioDTO.Rol,
-                FechaRegistro = usuarioDTO.FechaRegistro
+                FechaRegistro = usuarioDTO.FechaRegistro,
+                IdIdentity = usuarioDTO.IdIdentity
             };
         }
 

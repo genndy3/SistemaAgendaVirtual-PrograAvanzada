@@ -1,12 +1,16 @@
 ﻿using FrontEnd.Helpers.Implementations;
 using FrontEnd.Helpers.Interfaces;
 using FrontEnd.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 using System.Text;
+using System.Text.Json;
 
 namespace FrontEnd.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
         IEquipoHelper _equipoHelper;
@@ -36,7 +40,9 @@ namespace FrontEnd.Controllers
 
         public IActionResult admUsuarios()
         {
-            return View(new UserViewModel());
+            _usuariosHelper.Token = HttpContext.Session.GetString("Token");
+            var usuarios = _usuariosHelper.GetUsuarios();
+            return View(usuarios);
         }
 
         [HttpPost]
@@ -59,14 +65,23 @@ namespace FrontEnd.Controllers
             }
         }
 
-
-        public IActionResult UpdateUsuario([FromBody] UserViewModel usuario)
+        [HttpPut]
+        public IActionResult UpdateUsuario([FromBody] UsuarioViewModel usuario)
         {
             try
             {
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest(ModelState);
+                    // Log detallado de errores
+                    var errors = ModelState
+                        .Where(e => e.Value.Errors.Count > 0)
+                        .ToDictionary(
+                            e => e.Key,
+                            e => e.Value.Errors.Select(x => x.ErrorMessage).ToList()
+                        );
+
+                    Debug.WriteLine($"Errores de validación: {JsonSerializer.Serialize(errors)}");
+                    return BadRequest(errors);
                 }
 
                 _usuariosHelper.Token = HttpContext.Session.GetString("Token");
@@ -81,17 +96,9 @@ namespace FrontEnd.Controllers
                     return BadRequest("Datos de usuario no válidos");
                 }
 
-                // Conversión manual
-                var usuarioConvertido = new UsuarioViewModel
-                {
-                    Nombre = usuario.UserName,
-                    Correo = usuario.Email ?? "",
-                    Rol = "Usuario",
-                    FechaRegistro = DateTime.Now
-                };
-
-                var usuarioActualizado = _usuariosHelper.UpdateUsuario(usuarioConvertido);
+                var usuarioActualizado = _usuariosHelper.UpdateUsuario(usuario);
                 return Ok(usuarioActualizado);
+
             }
             catch (Exception ex)
             {
@@ -106,7 +113,8 @@ namespace FrontEnd.Controllers
         }
 
 
-        [HttpDelete("DeleteUsuario/{id}")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult DeleteUsuario(int id)
         {
             try
@@ -157,7 +165,7 @@ namespace FrontEnd.Controllers
             }
 
             _equipoHelper.Token = HttpContext.Session.GetString("Token");
-            var equipos = _equipoHelper.GetEquiposPorUsuario(idUsuario);
+            var equipos = _equipoHelper.GetEquipos();
             foreach (var equipo in equipos)
             {
                 var usuarios = _equipoHelper.GetUsuariosPorEquipo(equipo.IdEquipo);
@@ -183,7 +191,7 @@ namespace FrontEnd.Controllers
             }
 
             _equipoHelper.Token = HttpContext.Session.GetString("Token");
-            var equipos = _equipoHelper.GetEquiposPorUsuario(idUsuario);
+            var equipos = _equipoHelper.GetEquipos();
             foreach (var equipo in equipos)
             {
                 var usuarios = _equipoHelper.GetUsuariosPorEquipo(equipo.IdEquipo);
@@ -479,7 +487,7 @@ namespace FrontEnd.Controllers
                 }
 
                 _tareaHelper.Token = HttpContext.Session.GetString("Token");
-                var result = _tareaHelper.GetTareasPersonales(idUsuario);
+                var result = _tareaHelper.GetAll();
 
                 ViewBag.IdUsuario = idUsuario;
 

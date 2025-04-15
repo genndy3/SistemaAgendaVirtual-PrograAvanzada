@@ -14,15 +14,20 @@
     <script src="~/js/PorEquipoTarea.js"></script>
 </head>
 <body>
-    <div class="d-flex flex-row mb-3 p-3 align-items-center flex-wrap">
-        <div class="p-2" style="width: 80px; max-width: 100%; flex-shrink: 0;">
-            <a href="@Url.Action("Index", "Home")" class="text-decoration-none">
-                <img src="\img\timely_logo.png" class="img-fluid" alt="Timely Logo">
-            </a>
+    <div class="d-flex justify-content-between align-items-center flex-wrap p-3">
+        <div class="d-flex align-items-center">
+            <div class="p-2" style="width: 80px; max-width: 100%; flex-shrink: 0;">
+                <a href="@Url.Action("Index", "Home")" class="text-decoration-none">
+                    <img src="\img\timely_logo.png" class="img-fluid" alt="Timely Logo">
+                </a>
+            </div>
+            <div class="p-2">
+                <h1 class="mt-2 text-center text-sm-start">TIMELY</h1>
+            </div>
         </div>
 
         <div class="p-2">
-            <h1 class="mt-2 text-center text-sm-start">TIMELY</h1>
+            <img src="\img\user.png" alt="Usuario" style="width: 45px; height: 45px; object-fit: cover; border-radius: 50%;">
         </div>
     </div>
     <div class="container mt-4">
@@ -116,7 +121,7 @@
             <div class="modal-header border border-0">
                 <h3 class="text-blue">Crear Tarea</h3>
             </div>
-            <div class="modal-body border border-0">
+            <div class="modal-body border border-0" style="max-height: 70vh; overflow-y: auto;">
                 <div class="form-group">
                     <input type="text" id="tituloTarea"
                            class="form-control border-blue rounded-0 shadow-none"

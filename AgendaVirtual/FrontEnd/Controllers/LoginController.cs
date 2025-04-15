@@ -66,7 +66,14 @@ namespace FrontEnd.Controllers
                         HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties()
                         { IsPersistent = false });
 
-                        return RedirectToAction("Index", "Home");
+                        if (roles.Contains("Admin"))
+                        {
+                            return RedirectToAction("AdminDashboard", "Admin");
+                        }
+                        else
+                        {
+                            return RedirectToAction("Index", "Home");
+                        }
                     }
                     else
                     {

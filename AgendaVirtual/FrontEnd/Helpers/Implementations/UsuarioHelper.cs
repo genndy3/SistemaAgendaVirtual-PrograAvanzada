@@ -2,6 +2,7 @@ using FrontEnd.APIModels;
 using FrontEnd.Helpers.Interfaces;
 using FrontEnd.Models;
 using Newtonsoft.Json;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http.Headers;
 
@@ -25,7 +26,9 @@ namespace FrontEnd.Helpers.Implementations
                 Nombre = usuarioAPI.Nombre,
                 Correo = usuarioAPI.Correo,
                 Rol = usuarioAPI.Rol,
-                FechaRegistro = usuarioAPI.FechaRegistro
+                FechaRegistro = usuarioAPI.FechaRegistro,
+                Contrasena = usuarioAPI.Contrasena,
+                IdIdentity = usuarioAPI.IdIdentity
             };
         }
 
@@ -37,7 +40,9 @@ namespace FrontEnd.Helpers.Implementations
                 Nombre = usuario.Nombre,
                 Correo = usuario.Correo,
                 Rol = usuario.Rol,
-                FechaRegistro = usuario.FechaRegistro
+                FechaRegistro = usuario.FechaRegistro,
+                Contrasena = usuario.Contrasena,
+                IdIdentity = usuario.IdIdentity
             };
         }
 
@@ -123,9 +128,9 @@ namespace FrontEnd.Helpers.Implementations
                 _repository.Client.DefaultRequestHeaders.Authorization =
                     new AuthenticationHeaderValue("Bearer", Token);
 
-                HttpResponseMessage response = _repository.PutResponse(
-                    $"api/usuario/{usuario.IdUsuario}",
-                    Convertir(usuario));
+                Debug.WriteLine("Enviando a la API: " + JsonConvert.SerializeObject(usuario));
+
+                HttpResponseMessage response = _repository.PutResponse("api/usuario", usuario);
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -134,11 +139,13 @@ namespace FrontEnd.Helpers.Implementations
                 }
 
                 var content = response.Content.ReadAsStringAsync().Result;
-                return Convertir(JsonConvert.DeserializeObject<UsuarioAPI>(content));
+                usuario = JsonConvert.DeserializeObject<UsuarioViewModel>(content);
+
+                return usuario;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error en UsuarioHelper.UpdateUsuario: {ex.Message}\n{ex.StackTrace}");
+                Debug.WriteLine($"Error en UsuarioHelper.UpdateUsuario: {ex.Message}\n{ex.StackTrace}");
                 throw;
             }
         }

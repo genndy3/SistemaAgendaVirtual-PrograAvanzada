@@ -118,7 +118,7 @@ tr {
 }
 
 .contenedor-recordatorios {
-    height: 220px;
+    height: 200px;
     overflow-y: auto;
 }
 
@@ -127,7 +127,7 @@ tr {
     border-radius: 10px;
     border: 1px solid #ccc;
     padding: 10px;
-    height: 350px;
+    height: 200px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;

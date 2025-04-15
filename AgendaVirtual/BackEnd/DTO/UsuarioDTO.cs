@@ -13,5 +13,7 @@
         public string Rol { get; set; } = null!;
 
         public DateTime? FechaRegistro { get; set; }
+
+        public string? IdIdentity { get; set; }
     }
 }

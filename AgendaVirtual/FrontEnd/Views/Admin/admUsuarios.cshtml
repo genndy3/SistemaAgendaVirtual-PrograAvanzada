@@ -1,4 +1,4 @@
-﻿@model FrontEnd.Models.UserViewModel
+﻿@model List<FrontEnd.Models.UsuarioViewModel>
 
 @{
     ViewData["Title"] = "AdminUsuarios";
@@ -207,13 +207,21 @@
     </style>
 </head>
 <body>
-    <div class="d-flex flex-row mb-3 p-3 align-items-center flex-wrap">
-        <div class="p-2" style="width: 80px; max-width: 100%; flex-shrink: 0;">
-            <img src="\img\timely_logo.png" class="img-fluid" alt="Timely Logo">
+    @Html.AntiForgeryToken()
+    <div class="d-flex justify-content-between align-items-center flex-wrap p-3">
+        <div class="d-flex align-items-center">
+            <div class="p-2" style="width: 80px; max-width: 100%; flex-shrink: 0;">
+                <a href="@Url.Action("AdminDashboard", "Admin")" class="text-decoration-none">
+                    <img src="\img\timely_logo.png" class="img-fluid" alt="Timely Logo">
+                </a>
+            </div>
+            <div class="p-2">
+                <h1 class="mt-2 text-center text-sm-start">TIMELY</h1>
+            </div>
         </div>
 
         <div class="p-2">
-            <h1 class="mt-2 text-center text-sm-start">TIMELY</h1>
+            <img src="\img\user.png" alt="Usuario" style="width: 45px; height: 45px; object-fit: cover; border-radius: 50%;">
         </div>
     </div>
 
@@ -242,18 +250,52 @@
             </button>
         </div>
         <hr class="linea-divisora">
-        <table class="table" id="usuariosTable">
+        <table class="table">
             <thead>
                 <tr>
                     <th>ID</th>
                     <th>Nombre</th>
                     <th>Correo Electrónico</th>
                     <th>Rol</th>
+                    <th>Fecha de Registro</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
-            <tbody id="usuariosTableBody">
-                <!--se carga dinamicamente -->
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => item.IdUsuario)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Nombre)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Correo)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Rol)</td>
+                        <td>@Html.DisplayFor(modelItem => item.FechaRegistro)</td>
+                        <td class="actions">
+                            <img 
+                    src="/img/editar.png" 
+                    alt="Editar" 
+                    style="width:20px; margin-right:10px;" 
+                    onclick="editarUsuario(
+                        @item.IdUsuario, 
+                        '@item.Nombre', 
+                        '@item.Correo', 
+                        '@item.Rol',
+                        '@item.FechaRegistro',
+                        '@item.Contrasena',
+                        '@item.IdIdentity'
+                    )"
+                />
+                <img 
+                    src="/img/eliminar.png" 
+                    alt="Eliminar" 
+                    style="width:20px; margin-right:10px;" 
+                    onclick="eliminarUsuario(
+                        @item.IdUsuario, 
+                        '@item.Nombre')"
+                />
+                        </td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>
@@ -299,6 +341,9 @@
             <div class="modal-body">
                 <form id="editUserForm" class="p-4 rounded bg-white">
                     <input type="hidden" id="editIdUsuario">
+                    <input type="hidden" id="editFechaRegistro">
+                    <input type="hidden" id="editContrasena" name="Contrasena">
+                    <input type="hidden" id="editIdIdentity">
                     <div class="form-group">
                         <label for="editUserName" class="control-label">Usuario</label>
                         <input id="editUserName" name="UserName" class="form-control rounded-3 border-1" style="border-color: #162a6a;" required />
@@ -312,7 +357,7 @@
                     <div class="form-group">
                         <label for="editRol" class="control-label">Rol</label>
                         <select id="editRol" name="Rol" class="form-control rounded-3 border-1" style="border-color: #162a6a;">
-                            <option value="Administrador">Administrador</option>
+                            <option value="Admin">Administrador</option>
                             <option value="Usuario">Usuario</option>
                         </select>
                         <span class="text-danger" id="editRolError"></span>
@@ -335,52 +380,7 @@
         function closeModal(modalType) {
             document.getElementById(modalType + 'Modal').style.display = 'none';
         }
-
-        $(document).ready(function() {
-            cargarUsuarios();
-        });
-
-        function cargarUsuarios() {
-            $.ajax({
-                url: '@Url.Action("GetUsuarios", "Admin")',
-                type: 'GET',
-                success: function(usuarios) {
-                    var tbody = $('#usuariosTableBody');
-                    tbody.empty();
-
-        usuarios.forEach(function(usuario) {
-            var row = `<tr>
-                <td>${usuario.idUsuario}</td>
-                <td>${usuario.nombre}</td>
-                <td>${usuario.correo}</td>
-                <td>${usuario.rol}</td>
-                <td class="actions">
-                                <img src="/img/editar.png" alt="Editar"
-                                     onclick="editarUsuario(${usuario.idUsuario}, '${usuario.nombre}', '${usuario.correo}', '${usuario.rol}')"
-                                     style="cursor:pointer; width:20px; margin-right:10px;" />
-
-                                <form onsubmit="return confirm('¿Estás seguro de eliminar a ${usuario.nombre}?')"
-                                      action="@Url.Action("admUsuarios", "Admin")"
-                                      method="post"
-                                      class="d-inline">
-                                    <input type="hidden" name="id" value="${usuario.idUsuario}" />
-                                     @Html.AntiForgeryToken()
-                                    <button type="submit" class="bg-transparent border-0">
-                                        <img src="/img/eliminar.png" alt="Eliminar"
-                                             style="cursor:pointer; width:20px;" />
-                                    </button>
-                                </form>
-                            </td>
-            </tr>`;
-            tbody.append(row);
-        });
-                },
-                error: function(xhr) {
-                    console.error("Error al cargar usuarios:", xhr.responseText);
-                }
-            });
-        }
-
+  
         function crearUsuario() {
             var formData = {
                 UserName: $('#createUserName').val(),
@@ -395,7 +395,7 @@
                 success: function() {
                     closeModal('create');
                     $('#createUserForm')[0].reset();
-                    cargarUsuarios();
+                    window.location.href = '/Admin/admUsuarios';
                 },
                 error: function(xhr) {
                     if (xhr.status === 400) {
@@ -408,21 +408,41 @@
             });
         }
 
-        function editarUsuario(id, nombre, correo, rol) {
-            $('#editIdUsuario').val(id);
-            $('#editUserName').val(nombre);
-            $('#editEmail').val(correo);
-            $('#editRol').val(rol);
-            openModal('edit');
-        }
+        function editarUsuario(id, nombre, correo, rol, fechaRegistro, contrasena, idIdentity) {
+    $('#editIdUsuario').val(id);
+    $('#editUserName').val(nombre);
+    $('#editEmail').val(correo);
+    $('#editRol').val(rol);
+    $('#editFechaRegistro').val(fechaRegistro);
+    $('#editContrasena').val(contrasena); // Asigna al campo oculto
+    $('#editIdIdentity').val(idIdentity);
+    openModal('edit');
+}
 
         function actualizarUsuario() {
+            var fechaRaw = $('#editFechaRegistro').val(); // "14/4/2025 21:44:01"
+
+function parseFechaCustom(fechaStr) {
+    // Separar fecha y hora
+    var partes = fechaStr.split(' ');
+    var fecha = partes[0].split('/');
+    var hora = partes[1];
+
+    // Reorganizar a formato ISO
+    var fechaISO = `${fecha[2]}-${fecha[1].padStart(2, '0')}-${fecha[0].padStart(2, '0')}T${hora}`;
+    return new Date(fechaISO).toISOString();
+}
+
             var formData = {
-                IdUsuario: parseInt($('#editIdUsuario').val()),
-                UserName: $('#editUserName').val(),
-                Email: $('#editEmail').val(),
-                Rol: $('#editRol').val()
-            };
+        IdUsuario: parseInt($('#editIdUsuario').val()),
+        Nombre: $('#editUserName').val(),
+        Correo: $('#editEmail').val(),
+        Rol: $('#editRol').val(),
+        FechaRegistro: parseFechaCustom(fechaRaw),
+        Contrasena: $('#editContrasena').val(), // ¡Asegúrate de que no sea null!
+        IdIdentity: $('#editIdIdentity').val()
+    };
+    console.log("Datos a enviar:", formData); // Depuración
 
             $.ajax({
                 url: '@Url.Action("UpdateUsuario", "Admin")',
@@ -431,7 +451,7 @@
                 data: JSON.stringify(formData),
                 success: function(response) {
                     closeModal('edit');
-                    cargarUsuarios();
+                    window.location.href = '/Admin/admUsuarios';
                     $('#editUserNameError').text('');
                     $('#editEmailError').text('');
                     $('#editRolError').text('');
@@ -451,48 +471,66 @@
             });
         }
 
+        
         function eliminarUsuario(id, nombre) {
-            if (confirm(`¿Estás seguro de eliminar al usuario ${nombre}?`)) {
-                const $icono = $(`i[onclick*="eliminarUsuario(${id}"]`);
-                $icono.replaceWith('<i class="bi bi-trash-fill text-danger"><span class="spinner-border spinner-border-sm"></span></i>');
+    if (confirm(`¿Estás seguro de eliminar al usuario ${nombre}?`)) {
+        // Corrige el selector para que coincida con tus imágenes
+        const $icono = $(`img[onclick*="eliminarUsuario(${id}"]`);
+        $icono.replaceWith('<i class="bi bi-trash-fill text-danger"><span class="spinner-border spinner-border-sm"></span></i>');
 
-                $.ajax({
-                    url: '@Url.Action("DeleteUsuario", "Admin")/' + id,
-                    type: 'DELETE',
-                    success: function(response) {
-                        if (response.Success) {
-                            cargarUsuarios();
-                            alert(response.Message);
-                        } else {
-                            alert(response.Message || "No se pudo eliminar el usuario");
-                        }
-                    },
-                    error: function(xhr) {
-                        let errorMsg = "Error al eliminar: ";
+        $.ajax({
+            url:  '@Url.Action("DeleteUsuario", "Admin")/' + id,
+            type: 'POST',
+            headers: {
+                'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val(),
+                'Content-Type': 'application/json'
+            },
+            success: function(response) {
+                    window.location.href = '/Admin/admUsuarios';
+            },
+            error: function(xhr) {
+                console.error("Error en la solicitud:", xhr); // Para depuración
+                let errorMsg = "Error al eliminar: ";
+                
+                if (xhr.status === 404) {
+                    errorMsg += "El usuario ya no existe";
+                    location.reload();
+                } else if (xhr.responseJSON) {
+                    errorMsg += xhr.responseJSON.Message || xhr.statusText;
+                } else {
+                    errorMsg += xhr.statusText;
+                }
 
-                        if (xhr.status === 404) {
-                            errorMsg += "El usuario ya no existe";
-                            cargarUsuarios(); 
-                        } else {
-                            try {
-                                const errorResponse = JSON.parse(xhr.responseText);
-                                errorMsg += errorResponse.Message || xhr.statusText;
-                            } catch {
-                                errorMsg += xhr.statusText;
-                            }
-                        }
-
-                        alert(errorMsg);
-                    },
-                    complete: function() {
-                        $icono.replaceWith(
-                            `<i class="bi bi-trash-fill text-danger"
-                              onclick="eliminarUsuario(${id}, '${nombre}')"></i>`
-                        );
-                    }
-                });
+                alert(errorMsg);
+            },
+            complete: function() {
+                // Vuelve a poner la imagen original
+                $icono.replaceWith(
+                    `<img src="/img/eliminar.png" alt="Eliminar" 
+                          style="width:20px; margin-right:10px; cursor:pointer;"
+                          onclick="eliminarUsuario(${id}, '${nombre.replace(/'/g, "\\'")}')">`
+                );
             }
+        });
+    }
+}
+
+function cargarUsuarios() {
+    $.ajax({
+        url: '@Url.Action("admUsuarios", "Admin")',
+        type: 'GET',
+        success: function(data) {
+            // Extrae solo el contenido de la tabla del HTML recibido
+            var nuevoContenido = $(data).find('tbody').html();
+            $('tbody').html(nuevoContenido);
+        },
+        error: function() {
+            // Si falla, recarga toda la página
+            location.reload();
         }
+    });
+}
+
     </script>
 </body>
 </html>
