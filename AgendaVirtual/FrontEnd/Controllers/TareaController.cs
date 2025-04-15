@@ -4,6 +4,7 @@ using FrontEnd.Helpers.Interfaces;
 using FrontEnd.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NuGet.Common;
 
 namespace FrontEnd.Controllers
 {
@@ -14,12 +15,14 @@ namespace FrontEnd.Controllers
         IRecordatorioHelper _recordatorioHelper;
         IComentarioHelper _comentarioHelper;
         IEquipoHelper _equipoHelper;
-        public TareaController(ITareaHelper tareaHelper, IRecordatorioHelper recordatorioHelper, IComentarioHelper comentarioHelper, IEquipoHelper equipoHelper)
+        IUsuarioHelper _usuarioHelper;
+        public TareaController(ITareaHelper tareaHelper, IRecordatorioHelper recordatorioHelper, IComentarioHelper comentarioHelper, IEquipoHelper equipoHelper, IUsuarioHelper usuarioHelper)
         {
             _tareaHelper = tareaHelper;
             _recordatorioHelper = recordatorioHelper;
             _comentarioHelper = comentarioHelper;
             _equipoHelper = equipoHelper;
+            _usuarioHelper = usuarioHelper;
         }
 
 
@@ -139,18 +142,33 @@ namespace FrontEnd.Controllers
         {
             try
             {
+                var token = HttpContext.Session.GetString("Token");
+                if (string.IsNullOrEmpty(token))
+                {
+                    return Unauthorized(new
+                    {
+                        Success = false,
+                        Message = "Token de autenticación no válido"
+                    });
+                }
 
-                _tareaHelper.Token = HttpContext.Session.GetString("Token");
+                _tareaHelper.Token = token;
+                _recordatorioHelper.Token = token;
+                _comentarioHelper.Token = token;
 
                 var nuevaTarea = _tareaHelper.AddTarea(tarea);
+
                 tarea.RecordatoriosList = tarea.RecordatoriosList ?? new List<RecordatorioViewModel>();
-                if (tarea.RecordatoriosList != null && tarea.RecordatoriosList.Any())
+                foreach (var recordatorio in tarea.RecordatoriosList)
                 {
-                    foreach (var recordatorio in tarea.RecordatoriosList)
+                    var nuevoRecordatorio = new RecordatorioViewModel
                     {
-                        recordatorio.IdTarea = nuevaTarea.IdTarea;
-                        _recordatorioHelper.AddRecordatorio(recordatorio);
-                    }
+                        IdTarea = nuevaTarea.IdTarea,
+                        IdUsuario = recordatorio.IdUsuario,
+                        Mensaje = recordatorio.Mensaje,
+                        FechaHora = recordatorio.FechaHora
+                    };
+                    _recordatorioHelper.AddRecordatorio(nuevoRecordatorio);
                 }
 
                 tarea.ComentariosList = tarea.ComentariosList ?? new List<ComentarioViewModel>();
@@ -166,7 +184,6 @@ namespace FrontEnd.Controllers
                     _comentarioHelper.AddComentario(nuevoComentario);
                 }
 
-
                 return Ok(new
                 {
                     Success = true,
@@ -176,10 +193,11 @@ namespace FrontEnd.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new
+                Console.WriteLine($"Error al crear tarea: {ex.Message}\n{ex.StackTrace}");
+                return StatusCode(500, new
                 {
                     Success = false,
-                    Message = "Error al crear la tarea",
+                    Message = "Error interno al crear la tarea",
                     Error = ex.Message
                 });
             }
@@ -193,22 +211,36 @@ namespace FrontEnd.Controllers
             return View(tarea);
         }
 
-        //REVISAR FUNCIONALIDAD CON LA DB, YA QUE NO FUNCIONA.
         [HttpPut]
         public IActionResult Edit([FromBody] TareaViewModel tarea)
         {
             try
             {
-                _tareaHelper.Token = HttpContext.Session.GetString("Token");
+                var token = HttpContext.Session.GetString("Token");
+                if (string.IsNullOrEmpty(token))
+                {
+                    return Unauthorized(new
+                    {
+                        Success = false,
+                        Message = "Token de autenticación no válido"
+                    });
+                }
+
+                _tareaHelper.Token = token;
+                _recordatorioHelper.Token = token;
+                _comentarioHelper.Token = token;
+
                 var tareaActualizada = _tareaHelper.UpdateTarea(tarea);
 
                 tarea.RecordatoriosList = tarea.RecordatoriosList ?? new List<RecordatorioViewModel>();
-                var recordatoriosActuales = _recordatorioHelper.GetRecordatoriosByTarea(tarea.IdTarea) ?? new List<RecordatorioViewModel>();
+                var recordatoriosActuales = _recordatorioHelper.GetRecordatoriosByTarea(tarea.IdTarea)
+                                          ?? new List<RecordatorioViewModel>();
 
-                var idsNuevosRecordatorios = tarea.RecordatoriosList.Where(r => r.IdRecordatorio != 0).Select(r => r.IdRecordatorio).ToList();
-                var idsActualesRecordatorios = recordatoriosActuales.Select(r => r.IdRecordatorio).ToList();
+                var idsNuevos = tarea.RecordatoriosList.Select(r => r.IdRecordatorio).ToList();
+                var idsActuales = recordatoriosActuales.Select(r => r.IdRecordatorio).ToList();
 
-                foreach (var id in idsActualesRecordatorios.Except(idsNuevosRecordatorios))
+                var idsParaEliminar = idsActuales.Except(idsNuevos).ToList();
+                foreach (var id in idsParaEliminar)
                 {
                     _recordatorioHelper.DeleteRecordatorio(id);
                 }
@@ -219,8 +251,8 @@ namespace FrontEnd.Controllers
                     {
                         var nuevoRecordatorio = new RecordatorioViewModel
                         {
-                            IdUsuario = tarea.IdUsuario,
                             IdTarea = tarea.IdTarea,
+                            IdUsuario = tarea.IdUsuario,
                             Mensaje = recordatorio.Mensaje,
                             FechaHora = recordatorio.FechaHora
                         };
@@ -269,17 +301,16 @@ namespace FrontEnd.Controllers
                 {
                     Success = true,
                     Message = "Tarea actualizada correctamente",
-                    Tarea = tareaActualizada,
-                    ComentariosAgregados = idsNuevosComentarios.Count
+                    Tarea = tareaActualizada
                 });
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error grave: {ex.ToString()}");
-                return BadRequest(new
+                Console.WriteLine($"Error al editar tarea: {ex.Message}\n{ex.StackTrace}");
+                return StatusCode(500, new
                 {
                     Success = false,
-                    Message = "Error al actualizar la tarea",
+                    Message = "Error interno al actualizar la tarea",
                     Error = ex.Message
                 });
             }
@@ -300,7 +331,14 @@ namespace FrontEnd.Controllers
         {
             try
             {
-                _tareaHelper.Token = HttpContext.Session.GetString("Token");
+                var token = HttpContext.Session.GetString("Token");
+                _tareaHelper.Token = token;
+                _recordatorioHelper.Token = token;
+                var recordatorios = _recordatorioHelper.GetRecordatoriosByTarea(id);
+                foreach (var recordatorio in recordatorios)
+                {
+                    _recordatorioHelper.DeleteRecordatorio(recordatorio.IdRecordatorio);
+                }
                 _tareaHelper.DeleteTarea(id);
                 return RedirectToAction(nameof(Index));
             }
@@ -357,6 +395,27 @@ namespace FrontEnd.Controllers
             }
         }
 
+        public IActionResult GetUsuarios()
+        {
+            try {
+                _usuarioHelper.Token = HttpContext.Session.GetString("Token");
+                var usuario = _usuarioHelper.GetUsuarios();
+                if (usuario == null)
+                {
+                    return NotFound();
+                }
+                return Json(usuario);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Success = false,
+                    Message = "Error al obtener el usuario",
+                    Error = ex.Message
+                });
+            }
+        }
         public ActionResult DeleteComentario(int id)
         {
             try

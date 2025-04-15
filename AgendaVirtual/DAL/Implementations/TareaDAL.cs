@@ -24,16 +24,15 @@ namespace DAL.Implementations
         }
         public IEnumerable<Tarea> getAllByEquipoAndUser(int idUsuario)
         {
-            var equipos = _context.UsuarioEquipos
-                                  .Where(ue => ue.IdUsuario == idUsuario)
-                                  .Select(ue => ue.IdEquipo)
-                                  .ToList();
+ 
+            var idsEquipos = _context.UsuarioEquipos
+                .Where(ue => ue.IdUsuario == idUsuario)
+                .Select(ue => ue.IdEquipo)
+                .ToList();
 
-            var tareas = _context.Tareas
-                                 .Where(t => equipos.Contains((int)t.IdEquipo) && t.IdUsuario == idUsuario)
-                                 .ToList();
-
-            return tareas;
+            return _context.Tareas
+                .Where(t => idsEquipos.Contains((int)t.IdEquipo)) 
+                .ToList();
         }
 
         public Tarea AgregarTarea(Tarea tarea)
