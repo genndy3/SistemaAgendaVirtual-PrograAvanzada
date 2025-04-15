@@ -9,5 +9,8 @@ namespace DAL.Interfaces
 {
     public interface IRecordatorioDAL : IDALGenerico<Recordatorio>
     {
+        Recordatorio addRecordatorio(Recordatorio recordatorio);
+        IEnumerable<Recordatorio> getRecordatoriosNotInTarea(int idTarea);
+        IEnumerable<Recordatorio> getRecordatoriosByTarea(int idTarea);
     }
 }

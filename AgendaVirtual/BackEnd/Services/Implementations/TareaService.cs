@@ -47,9 +47,9 @@ namespace BackEnd.Services.Implementations
 
         public TareaDTO Add(TareaDTO tareaDTO)
         {
-            _unidadDeTrabajo.tareaDAL.Add(Convertir(tareaDTO));
+            Tarea nuevaTarea = _unidadDeTrabajo.tareaDAL.AgregarTarea(Convertir(tareaDTO));
             _unidadDeTrabajo.Complete();
-            return tareaDTO;
+            return Convertir(nuevaTarea);
         }
 
         public TareaDTO Delete(int id)

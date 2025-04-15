@@ -15,5 +15,32 @@ namespace DAL.Implementations
         {
             _context = context;
         }
+        public Recordatorio addRecordatorio(Recordatorio recordatorio)
+        {
+            try
+            {
+                _context.Recordatorios.Add(recordatorio);
+                _context.SaveChanges();
+                return recordatorio;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        public IEnumerable<Recordatorio> getRecordatoriosByTarea(int idTarea)
+        {
+            return _context.Recordatorios
+                .Where(r => r.IdTarea == idTarea)
+                .ToList();
+        }
+
+        public IEnumerable<Recordatorio> getRecordatoriosNotInTarea(int idTarea)
+        {
+            return _context.Recordatorios
+                .Where(r => r.IdTarea != idTarea)
+                .ToList();
+        }
     }
 }

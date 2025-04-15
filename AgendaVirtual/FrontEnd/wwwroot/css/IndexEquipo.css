@@ -25,6 +25,21 @@
     border: none;
 }
 
+.btn-eliminar {
+    all: unset;
+    border: 2px solid #ff0000;
+    background-color: transparent;
+    width: 120px;
+    height: 35px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.btn-eliminar:hover {
+    background-color: red;
+    color: white;
+} 
+
 .formulario-equipo {
     position: fixed;
     top: 0;
@@ -150,7 +165,7 @@ footer {
     flex-direction: row-reverse;
     justify-content: flex-end;
     margin-right: -15px;
-}
+}   
 
 .avatar-stack .avatar-img {
     width: 32px;

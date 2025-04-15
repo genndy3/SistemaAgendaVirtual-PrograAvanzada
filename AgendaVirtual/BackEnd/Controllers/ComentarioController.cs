@@ -51,5 +51,11 @@ namespace BackEnd.Controllers
         {
             _comentarioService.Delete(id);
         }
+
+        [HttpGet("GetAllByTarea/{idTarea}")]
+        public ActionResult GetAllByTarea(int idTarea)
+        {
+            return Ok(_comentarioService.GetAllByTarea(idTarea));
+        }
     }
 }

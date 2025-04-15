@@ -1,4 +1,4 @@
-using FrontEnd.APIModels;
+    using FrontEnd.APIModels;
 using FrontEnd.Helpers.Interfaces;
 using FrontEnd.Models;
 using Microsoft.VisualStudio.Web.CodeGeneration.Design;
@@ -38,6 +38,7 @@ namespace FrontEnd.Helpers.Implementations
             if (response.IsSuccessStatusCode)
             {
                 var content = response.Content.ReadAsStringAsync().Result;
+                tarea = Convertir(JsonConvert.DeserializeObject<TareaAPI>(content));
             }
             return tarea;
         }

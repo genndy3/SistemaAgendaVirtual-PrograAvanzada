@@ -33,9 +33,10 @@ namespace BackEnd.Controllers
 
         // POST api/<EquipoController>
         [HttpPost]
-        public void Post([FromBody] RecordatorioDTO recordatorio)
+        public RecordatorioDTO Post([FromBody] RecordatorioDTO recordatorio)
         {
-            _recordatorioService.Add(recordatorio);
+            RecordatorioDTO nuevoRecordatorio = _recordatorioService.Add(recordatorio);
+            return nuevoRecordatorio;
         }
 
         // PUT api/<EquipoController>/5
@@ -50,6 +51,18 @@ namespace BackEnd.Controllers
         public void Delete(int id)
         {
             _recordatorioService.Delete(id);
+        }
+
+        [HttpGet("Tarea/{idTarea}")]
+        public ActionResult GetAllByTarea(int idTarea)
+        {
+            return Ok(_recordatorioService.getAllByTarea(idTarea));
+        }
+
+        [HttpGet("RecordatoriosNotIn/{idTarea}")]
+        public ActionResult GetAllNotInTarea(int idTarea)
+        {
+            return Ok(_recordatorioService.getAllNotInTarea(idTarea));
         }
     }
 }

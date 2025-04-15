@@ -87,12 +87,13 @@
             </div>
             <div class="modal-body border-0">
                 <div class="form-group">
-                    <input type="text" id="nombreEquipo" class="form-control border-blue rounded-0 shadow-none" placeholder="Nombre del equipo">
-                    <input type="hidden" id="idEquipo">
+                    <input type="text" id="nombreEquipo" class="form-control border-blue rounded-0 shadow-none" placeholder="Nombre del equipo" required>
+                    <div class="invalid-feedback">El nombre del equipo es obligatorio.</div>
                 </div>
                 <div class="form-group mt-4">
                     <label for="descripcionEquipo" class="text-blue">Descripción</label>
-                    <textarea id="descripcionEquipo" class="form-control equipo-bg shadow-none" placeholder="Describe el equipo" rows="4"></textarea>
+                    <textarea id="descripcionEquipo" class="form-control equipo-bg shadow-none" placeholder="Describe el equipo" rows="4" required></textarea>
+                    <div class="invalid-feedback">La descripción es obligatoria.</div>
                 </div>
                 <div class="form-group mt-4 contenedor-recordatorios">
                     <label for="participantes" class="text-blue">Integrantes</label>
@@ -109,11 +110,18 @@
                 </div>
             </div>
             <div class="modal-footer w-100">
+                <form asp-action="DeleteConfirmed" method="post" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este equipo?');">
+                    <input type="hidden" name="id" id="idEquipo" value="">
+                    <button class="btn-eliminar">Eliminar Equipo</button>
+                </form>
                 <button class="btn-cancelar text-blue" onclick="toggleFormulario()">Cancelar</button>
                 <button class="btn-crear" onclick="guardarEquipo()">Guardar</button>
             </div>
         </div>
     </div>
+
+
+    <div id="usuarioDatos" data-id="@ViewBag.IdUsuarioAuth" data-nombre="@User.Identity.Name"></div>
 
     <footer>
         © 2025 - Derechos Reservados
