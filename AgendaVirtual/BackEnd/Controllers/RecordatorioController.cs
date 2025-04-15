@@ -33,9 +33,10 @@ namespace BackEnd.Controllers
 
         // POST api/<EquipoController>
         [HttpPost]
-        public void Post([FromBody] RecordatorioDTO recordatorio)
+        public RecordatorioDTO Post([FromBody] RecordatorioDTO recordatorio)
         {
-            _recordatorioService.Add(recordatorio);
+            RecordatorioDTO nuevoRecordatorio = _recordatorioService.Add(recordatorio);
+            return nuevoRecordatorio;
         }
 
         // PUT api/<EquipoController>/5

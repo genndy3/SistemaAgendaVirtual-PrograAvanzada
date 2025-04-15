@@ -11,5 +11,6 @@
         public string Mensaje { get; set; } = null!;
 
         public DateTime FechaHora { get; set; }
+        public string? TituloTarea { get; set; }
     }
 }

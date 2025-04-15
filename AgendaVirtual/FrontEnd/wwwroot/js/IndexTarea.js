@@ -22,7 +22,8 @@ function validarFormulario() {
         const input = document.getElementById(campo.id);
         if (!input.value.trim()) {
             input.classList.add("is-invalid");
-            input.nextElementSibling.textContent = campo.mensaje;
+            const feedback = input.nextElementSibling;
+            if (feedback) feedback.textContent = campo.mensaje;
             isValid = false;
         } else {
             input.classList.remove("is-invalid");
@@ -32,8 +33,9 @@ function validarFormulario() {
 
     return isValid;
 }
-function mostrarComentarios(comentarios) {
-    const contenedor = $("zona-comentarios");
+
+async function mostrarComentarios(comentarios) {
+    const contenedor = document.getElementById("zona-comentarios");
     contenedor.innerHTML = "";
 
     if (comentarios.length === 0) {
@@ -41,17 +43,45 @@ function mostrarComentarios(comentarios) {
         return;
     }
 
+    const response = await fetch("/Tarea/GetUsuarios");
+    const usuarios = await response.json();
+
     comentarios.forEach(comentario => {
+        const usuario = usuarios.find(u => u.idUsuario === comentario.idUsuario);
+        const nombreUsuario = usuario ? usuario.nombre : "Anónimo";
+
+        const div = document.createElement("div");
+        div.className = "mb-2";
+        div.innerHTML = `
+            <p class="mb-0"><strong>${nombreUsuario}:</strong> ${comentario.texto}</p>
+            <small class="text-muted">${new Date(comentario.fechaHora).toLocaleString()}</small>
+        `;
+        contenedor.appendChild(div);
+    });
+
+    contenedor.scrollTop = contenedor.scrollHeight;
+}
+
+function mostrarRecordatoriosDeTarea(recordatorios) {
+    const contenedor = $("listaRecordatorios");
+    contenedor.innerHTML = "";
+
+    if (recordatorios.length === 0) {
+        contenedor.innerHTML = `<p class="text-muted">No hay recordatorios aún.</p>`;
+        return;
+    }
+
+    recordatorios.forEach(r => {
         const div = document.createElement("div");
         div.className = "mb-2";
 
-        const fecha = new Date(comentario.fechaHora);
+        const fecha = new Date(r.fechaHora);
         const fechaStr = fecha.toLocaleString();
 
         div.innerHTML = `
-                <p class="mb-0"><strong>Tú:</strong> ${comentario.texto}</p>
-                <small class="text-muted">${fechaStr}</small>
-            `;
+            <p class="mb-0"><strong>Recordatorio:</strong> ${r.Mensaje}</p>
+            <small class="text-muted">${fechaStr}</small>
+        `;
 
         contenedor.appendChild(div);
     });
@@ -93,11 +123,10 @@ async function cargarTarea(id) {
         });
 
         recordatoriosSeleccionados = tarea.recordatoriosList || [];
-        comentariosSeleccionados = tarea.comentariosList || [];
-
         mostrarRecordatorios(recordatoriosSeleccionados);
+
+        comentariosSeleccionados = tarea.comentariosList || [];
         mostrarComentarios(comentariosSeleccionados);
-        mostrarRecordatoriosNotInTarea(id);
 
         toggleFormulario();
     } catch (error) {
@@ -128,7 +157,6 @@ function agregarTareaModal() {
 
     mostrarRecordatorios(recordatoriosSeleccionados);
     mostrarComentarios(comentariosSeleccionados);
-    cargarTodosLosRecordatorios();
 
     toggleFormulario();
 }
@@ -163,11 +191,10 @@ async function guardarTarea() {
         Prioridad: getValue("prioridadTarea"),
         IdEquipo: getValue("idEquipo") || null,
         RecordatoriosList: recordatoriosSeleccionados.map(r => ({
-            IdRecordatorio: r.idRecordatorio || 0,
             Mensaje: r.mensaje,
-            IdTarea: idTarea ? parseInt(idTarea) : 0,
-            IdUsuario: parseInt(getValue("idUsuario")),
-            FechaHora: r.fechaHora || new Date().toISOString()
+            FechaHora: r.fechaHora,
+            IdUsuario: r.idUsuario,
+            IdTarea: idTarea ? parseInt(idTarea) : 0
         })),
         ComentariosList: comentariosSeleccionados.map(c => ({
             Texto: c.texto,
@@ -201,9 +228,7 @@ async function guardarTarea() {
         }
 
         toggleFormulario();
-        if (!idTarea) {
-            location.reload(); 
-        }
+        location.reload();
     } catch (error) {
         console.error('Error al guardar la tarea:', error);
         alert(error.message || 'Hubo un error al guardar la tarea. Ver la consola para más detalles.');
@@ -215,6 +240,7 @@ function enviarComentario() {
     const texto = input.value.trim();
 
     if (texto) {
+
         const nuevoComentario = {
             texto: texto,
             fechaHora: new Date().toISOString(),
@@ -230,113 +256,89 @@ function enviarComentario() {
     }
 }
 
-function mostrarRecordatoriosNotInTarea(id) {
-    const token = sessionStorage.getItem("Token");
-    fetch(`/Tarea/GetRecordatoriosNotInTarea/${id}`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        }
-    })
-        .then(response => response.json())
-        .then(data => {
-            const select = document.getElementById("recordatorios");
-            select.innerHTML = "<option value=''>Seleccione un recordatorio</option>";
-            data.forEach(recordatorio => {
-                const option = document.createElement("option");
-                option.value = recordatorio.idRecordatorio;
-                option.textContent = recordatorio.mensaje;
-                select.appendChild(option);
-            });
-        })
-        .catch(error => console.error('Error al cargar los recordatorios:', error));
+function eliminarRecordatorio(id) {
+    recordatoriosSeleccionados = recordatoriosSeleccionados.filter(r => r.idRecordatorio !== id);
+    mostrarRecordatoriosDeTarea(recordatoriosSeleccionados);
 }
 
-function cargarTodosLosRecordatorios() {
-    const token = sessionStorage.getItem("Token");
-    fetch(`/Recordatorio/GetAll`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        }
-    })
-        .then(response => response.json())
-        .then(data => {
-            const select = document.getElementById("recordatorios");
-            select.innerHTML = "<option value=''>Seleccione un recordatorio</option>";
-            data.forEach(recordatorio => {
-                const option = document.createElement("option");
-                option.value = recordatorio.idRecordatorio;
-                option.textContent = recordatorio.mensaje;
-                select.appendChild(option);
-            });
-        })
-        .catch(error => console.error('Error al cargar recordatorios:', error));
+function agregarRecordatorioATarea() {
+    const mensajeInput = document.getElementById("mensajeRecordatorio");
+    const fechaHoraInput = document.getElementById("fechaRecordatorio");
+
+    const mensaje = mensajeInput.value;
+    const fechaHora = fechaHoraInput.value;
+
+    if (!mensaje) {
+        mensajeInput.classList.add("is-invalid");
+        mensajeInput.nextElementSibling.textContent = "El mensaje es obligatorio.";
+        return;
+    } else {
+        mensajeInput.classList.remove("is-invalid");
+    }
+
+    if (!fechaHora) {
+        fechaHoraInput.classList.add("is-invalid");
+        fechaHoraInput.nextElementSibling.textContent = "La fecha es obligatoria.";
+        return;
+    } else {
+        fechaHoraInput.classList.remove("is-invalid");
+    }
+
+    const nuevoRecordatorio = {
+        idRecordatorio: Date.now(), 
+        mensaje: mensaje,
+        fechaHora: fechaHora,
+        idUsuario: parseInt(document.getElementById("idUsuario").value)
+    };
+
+    recordatoriosSeleccionados.push(nuevoRecordatorio);
+    mostrarRecordatorios(recordatoriosSeleccionados);
+
+    mensajeInput.value = "";
+    fechaHoraInput.value = "";
+    mensajeInput.focus();
 }
+
+
+function eliminarRecordatorio(idRecordatorio, event) {
+    if (event) event.stopPropagation();
+
+    recordatoriosSeleccionados = recordatoriosSeleccionados.filter(r => r.idRecordatorio !== idRecordatorio);
+    mostrarRecordatorios(recordatoriosSeleccionados);
+}
+
 
 function mostrarRecordatorios(recordatorios) {
     const contenedor = document.getElementById("listaRecordatorios");
     contenedor.innerHTML = "";
 
     if (recordatorios.length === 0) {
-        contenedor.innerHTML = `<p class="text-muted">Sin recordatorios aún.</p>`;
+        contenedor.innerHTML = `<p class="text-muted">No hay recordatorios aún.</p>`;
         return;
     }
 
-    recordatorios.forEach(recordatorio => {
+    recordatorios.forEach(r => {
         const div = document.createElement("div");
-        div.className = "d-flex align-items-center bg-participante justify-content-between p-2 border-0 rounded shadow-sm recordatorio-w";
+        div.className = "d-flex align-items-center bg-participante justify-content-between p-2 border-0 rounded shadow-sm participante-w";
+
+        const fecha = new Date(r.fechaHora);
+        const fechaStr = fecha.toLocaleString();
+
         div.innerHTML = `
-                <div class="d-flex align-items-center gap-2">
-                    <span>${recordatorio.mensaje}</span>
-                </div>
-                <button type="button" class="bg-transparent border-0" onclick="eliminarRecordatorio('${recordatorio.idRecordatorio}', event)">
-                    <i class="bi bi-trash"></i>
-                </button>
-            `;
+            <div class="d-flex flex-column">
+                <span class="fw-bold">${r.mensaje}</span>
+                <small class="text-muted">${fechaStr}</small>
+            </div>
+            <button type="button" class="bg-transparent border-0" onclick="eliminarRecordatorio(${r.idRecordatorio}, event)">
+                <i class="bi bi-trash text-danger"></i>
+            </button>
+        `;
 
         contenedor.appendChild(div);
     });
 }
 
-function agregarRecordatorioATarea() {
-    const select = document.getElementById("recordatorios");
-    const idRecordatorio = parseInt(select.value);
-    const mensaje = select.options[select.selectedIndex]?.text;
 
-    if (!idRecordatorio) return;
-
-    if (recordatoriosSeleccionados.some(r => r.idRecordatorio === idRecordatorio)) {
-        alert("Este recordatorio ya está en la tarea.");
-        return;
-    }
-
-    recordatoriosSeleccionados.push({ idRecordatorio, mensaje });
-    mostrarRecordatorios(recordatoriosSeleccionados);
-    select.remove(select.selectedIndex);
-    select.selectedIndex = 0;
-}
-
-function eliminarRecordatorio(idRecordatorio, event) {
-    event.stopPropagation();
-    idRecordatorio = parseInt(idRecordatorio);
-
-    const recordatorioEliminado = recordatoriosSeleccionados.find(r => r.idRecordatorio === idRecordatorio);
-    recordatoriosSeleccionados = recordatoriosSeleccionados.filter(r => r.idRecordatorio !== idRecordatorio);
-
-    mostrarRecordatorios(recordatoriosSeleccionados);
-
-    const select = document.getElementById("recordatorios");
-    const yaExiste = Array.from(select.options).some(opt => parseInt(opt.value) === idRecordatorio);
-    if (!yaExiste && recordatorioEliminado) {
-        const nuevaOpcion = document.createElement("option");
-        nuevaOpcion.value = recordatorioEliminado.idRecordatorio;
-        nuevaOpcion.text = recordatorioEliminado.mensaje;
-        select.appendChild(nuevaOpcion);
-    }
-}
 
 $("comentarioInput").addEventListener("keypress", (e) => {
     if (e.key === "Enter") {

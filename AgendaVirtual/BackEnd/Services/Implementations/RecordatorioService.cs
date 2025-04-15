@@ -39,9 +39,9 @@ namespace BackEnd.Services.Implementations
         }
         public RecordatorioDTO Add(RecordatorioDTO recordatorioDTO)
         {
-            _unidadDeTrabajo.recordatorioDAL.Add(Convertir(recordatorioDTO));
+            Recordatorio nuevoRecordatorio = _unidadDeTrabajo.recordatorioDAL.addRecordatorio(Convertir(recordatorioDTO));
             _unidadDeTrabajo.Complete();
-            return recordatorioDTO;
+            return Convertir(nuevoRecordatorio);
         }
 
         public RecordatorioDTO Delete(int id)
