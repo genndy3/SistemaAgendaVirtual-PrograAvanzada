@@ -1,0 +1,182 @@
+﻿@model FrontEnd.Models.UsuarioViewModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Editar Perfil</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .profile-card {
+            display: flex;
+            width: 100%;
+            max-width: 900px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .profile-left {
+            background-color: #233671;
+            color: white;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+            .profile-left img {
+                width: 120px;
+                height: 120px;
+                object-fit: cover;
+                border-radius: 50%;
+                background-color: white;
+                margin-bottom: 20px;
+            }
+
+        .profile-right {
+            flex: 2;
+            padding: 30px;
+        }
+
+        .profile-header {
+            color: #233671;
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #233671;
+        }
+
+        .text-danger {
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background-color: #233671;
+            border: none;
+        }
+
+        .btn-outline-secondary {
+            border-color: #233671;
+            color: #233671;
+        }
+
+        .footer {
+            background-color: #233671;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center flex-wrap p-3">
+        <div class="d-flex align-items-center">
+            <div class="p-2" style="width: 80px;">
+                <a href="@Url.Action("Index", "Home")" class="text-decoration-none">
+                    <img src="/img/timely_logo.png" class="img-fluid" alt="Timely Logo" />
+                </a>
+            </div>
+            <div class="p-2">
+                <h1 class="mt-2 text-center text-sm-start">TIMELY</h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="container my-5">
+    <!-- Contenido principal -->
+    <div class="main-content">
+        <div class="profile-card">
+            <!-- Lado izquierdo -->
+            <div class="profile-left">
+                <img src="/img/user.png" alt="Avatar" />
+            </div>
+
+            <!-- Lado derecho: Formulario -->
+            <div class="profile-right">
+                <div class="profile-header">Editar Perfil</div>
+                <form asp-action="Index">
+                    <input type="hidden" asp-for="IdUsuario" />
+                    <input type="hidden" asp-for="IdIdentity" />
+                    <input type="hidden" asp-for="Contrasena" />
+                    <input type="hidden" asp-for="FechaRegistro" />
+                    <input type="hidden" asp-for="Rol" />
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="Nombre" class="form-label"></label>
+                            <input asp-for="Nombre" class="form-control" />
+                            <span asp-validation-for="Nombre" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Correo" class="form-label"></label>
+                        <input asp-for="Correo" class="form-control" />
+                        <span asp-validation-for="Correo" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-3">
+                        <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="w-100 d-flex justify-content-center mt-4">
+        <div style="max-width: 900px; width: 100%;">
+            <div class="d-grid gap-3">
+                <form asp-action="Logout" method="post">
+                    <button type="submit" class="btn btn-outline-secondary w-100">Cerrar sesión</button>
+                </form>
+
+                <form asp-action="EliminarCuenta" method="post" onsubmit="return confirm('¿Estás segura de que querés eliminar tu cuenta? Esta acción no se puede deshacer.')">
+                    <button type="submit" class="btn btn-danger w-100">Eliminar cuenta</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    
+    <!-- Footer -->
+    <footer class="footer mt-auto">
+        <p>&copy; 2025 - Derechos Reservados</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

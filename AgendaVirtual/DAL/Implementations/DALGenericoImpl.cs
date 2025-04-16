@@ -41,6 +41,11 @@ namespace DAL.Implementations
             return _agendaVirtualContext.Set<TEntity>().Find(id);
         }
 
+        public TEntity Get(object id1, object id2)
+        {
+            return _agendaVirtualContext.Set<TEntity>().Find(id1, id2);
+        }
+
         public IEnumerable<TEntity> GetAll()
         {
             return _agendaVirtualContext.Set<TEntity>().ToList();

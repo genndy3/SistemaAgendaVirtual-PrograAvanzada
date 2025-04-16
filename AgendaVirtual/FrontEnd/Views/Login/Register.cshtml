@@ -1,0 +1,83 @@
+﻿@model FrontEnd.Models.UserViewModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Timely</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .content {
+            flex-grow: 1;
+        }
+
+        footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background-color: #162a6a;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="d-flex flex-row mb-3 p-3 align-items-center flex-wrap">
+        <div class="p-2" style="width: 80px; max-width: 100%; flex-shrink: 0;">
+            <img src="\img\timely_logo.png" class="img-fluid" alt="Timely Logo">
+        </div>
+
+        <div class="p-2">
+            <h1 class="mt-2 text-center text-sm-start">TIMELY</h1>
+        </div>
+    </div>
+
+    <h2 class="text-center mb-3">Registro</h2>
+    <div class="d-flex justify-content-center">
+        <form asp-action="Register" class="p-4 rounded bg-white" style="max-width: 500px;">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="UserName" class="control-label">Usuario</label>
+                <input asp-for="UserName" class="form-control rounded-3 border-1" style="border-color: #162a6a;" />
+                <span asp-validation-for="UserName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Email" class="control-label">Email</label>
+                <input asp-for="Email" class="form-control rounded-3 border-1" style="border-color: #162a6a;" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Password" class="control-label">Contraseña</label>
+                <input asp-for="Password" class="form-control rounded-3 border-1" style="border-color: #162a6a;" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-3">
+                <input type="submit" value="Registrarse" class="btn rounded-2 w-100 text-white" style="background-color: #162a6a;" />
+            </div>
+        </form>
+    </div>
+    <p class="text-center mt-3">¿Ya tenés cuenta? <a href="@Url.Action("Login", "Login")">Ingresa aquí.</a></p>
+
+    <footer class="text-center p-2" style="background-color: #162a6a; color: white;">
+        <p>&copy; 2025 - Derechos Reservados</p>
+    </footer>
+
+    @section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+</body>
+</html>
+
+
+

@@ -1,0 +1,297 @@
+﻿body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+}
+
+.label-espaciado {
+    padding-right: 20px;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: auto;
+}
+
+.modal-body {
+    flex-grow: 1;
+}
+
+.modal-content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.formulario-tarea {
+    position: fixed;
+    top: 0;
+    right: -800px;
+    width: 800px;
+    height: 100%;
+    background: white;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    transition: right 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+}
+
+    .formulario-tarea.activo {
+        right: 0;
+    }
+
+.estado-badge {
+    padding: 5px 10px;
+    border-radius: 10px;
+    font-size: 0.9em;
+    color: white;
+}
+
+.estado-completado {
+    background: green;
+}
+
+.estado-en-curso {
+    background: blue;
+}
+
+.estado-pausado {
+    background: orange;
+}
+
+.estado-cancelado {
+    background: red;
+}
+
+td, th {
+    border: none;
+    color: #233671;
+    align-content: center;
+    align-items: center;
+}
+
+th {
+    color: #233671;
+}
+
+tr {
+    color: #233671;
+    align-content: center;
+    align-items: center;
+}
+
+.border-blue {
+    border: 0;
+    border-bottom: 2px solid #233671;
+}
+
+    .border-blue:focus {
+        border: 0;
+        border-bottom: 2px solid #233671;
+    }
+
+.tarea-bg {
+    background-color: rgba(211, 211, 211, 0.4);
+    border: 0;
+}
+
+    .tarea-bg:focus {
+        background-color: rgba(211, 211, 211, 0.4);
+        border: 0;
+    }
+
+.text-blue {
+    color: #233671;
+}
+
+.btn-cancelar {
+    border: 2px solid #233671;
+    background-color: transparent;
+}
+
+.btn-crear {
+    background-color: #233671;
+    color: white;
+    border: none;
+}
+
+.contenedor-recordatorios {
+    height: 200px;
+    overflow-y: auto;
+}
+
+.contenedor-comentarios {
+    background: white;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.zona-comentarios {
+    flex-grow: 1;
+    overflow-y: auto;
+    max-height: 300px;
+    padding-right: 5px;
+}
+
+.zona-input {
+    background-color: rgba(211, 211, 211, 0.4);
+    border-radius: 10px;
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.input-comentario {
+    flex-grow: 1;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 0.9em;
+}
+
+.btn-enviar {
+    background: none;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.flecha-icono {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border: solid #233671;
+    border-width: 0 2px 2px 0;
+    transform: rotate(-45deg);
+    margin-left: 5px;
+}
+
+
+.content {
+    flex-grow: 1;
+}
+
+
+.icon-container {
+    text-align: center;
+}
+
+    .icon-container img {
+        max-width: 100%;
+        height: auto;
+        width: 20px;
+        margin: 0 10px;
+    }
+
+table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+.tab-container {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+.tab {
+    display: inline-block;
+    text-align: center;
+    margin-right: 50px;
+}
+
+    .tab h3 {
+        margin-bottom: 0;
+        position: relative;
+        z-index: 2;
+        font-size: 18px;
+    }
+
+.tabs-line {
+    display: block;
+    width: 100%;
+    height: 3px;
+    background-color: #233671;
+}
+
+.tab.active-tab .tab-line {
+    width: 100%;
+    height: 6px;
+    background-color: #233671;
+}
+
+.tab:not(.active-tab) .tab-line {
+    display: none;
+}
+
+th {
+    color: #233671;
+}
+
+tbody tr {
+    background-color: rgba(211, 211, 211, 0.4);
+}
+
+.actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-action {
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .btn-action img {
+        width: 20px;
+        height: 20px;
+        object-fit: contain;
+    }
+
+.actions form {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+.actions img {
+    width: 20px;
+    height: auto;
+    margin: 0 10px;
+}
+
+.tab img {
+    width: 20px;
+    height: auto;
+    margin-left: 100px;
+}
+
+.recordatorio-w {
+    width: 91%;
+}
+
+#listaRecordatorios {
+    max-height: 150px;
+    overflow-y: auto;
+    padding-right: 5px;
+}

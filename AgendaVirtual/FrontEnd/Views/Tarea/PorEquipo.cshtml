@@ -1,0 +1,216 @@
+﻿@model IEnumerable<FrontEnd.Models.TareaViewModel>
+
+@{
+    ViewData["Title"] = "PorEquipo";
+    Layout = null;
+}
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tareas personales - Timely</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/PorEquipoTarea.css" />
+    <script src="~/js/PorEquipoTarea.js"></script>
+</head>
+<body>
+    <div class="d-flex justify-content-between align-items-center flex-wrap p-3">
+        <div class="d-flex align-items-center">
+            <div class="p-2" style="width: 80px; max-width: 100%; flex-shrink: 0;">
+                <a href="@Url.Action("Index", "Home")" class="text-decoration-none">
+                    <img src="\img\timely_logo.png" class="img-fluid" alt="Timely Logo">
+                </a>
+            </div>
+            <div class="p-2">
+                <h1 class="mt-2 text-center text-sm-start">TIMELY</h1>
+            </div>
+        </div>
+
+        <div class="p-2">
+            <a href="@Url.Action("Index", "Usuario")" class="text-decoration-none text-dark">
+                <img src="\img\user.png" alt="Usuario" style="width: 45px; height: 45px; object-fit: cover; border-radius: 50%;">
+            </a>
+        </div>
+    </div>
+    <div class="container mt-4">
+        <div class="d-flex justify-content-center align-items-center">
+            <h2 class="fw-bold">Tareas</h2>
+        </div>
+
+        <div class="container mt-5">
+            <div class="tab-container">
+                <div class="tab">
+                    <a href="@Url.Action("Index", "Tarea")" style="text-decoration: none; color: inherit;">
+                        <h3>Personales</h3>
+                        <div class="tab-line"></div>
+                    </a>
+                </div>
+                <div class="tab active-tab">
+                    <a href="@Url.Action("PorEquipo", "Tarea")" style="text-decoration: none; color: inherit;">
+                        <h3>Por equipo</h3>
+                        <div class="tab-line"></div>
+                    </a>
+                </div>
+                <button id="btnAbrirFormulario" class="border-0 " style="background:none" onclick="agregarTareaModal()">
+                    <i class="bi bi-plus-circle text-lg"></i>
+                </button>
+            </div>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Tarea</th>
+                        <th>Fecha limite</th>
+                        <th>Estado</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center">No hay tareas por equipo.</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Titulo)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.FechaLimite)
+                                </td>
+                                <td>
+                                    @if (item.Estado == "En Proceso")
+                                    {
+                                        <span class="estado-badge estado-completado">En proceso</span>
+                                    }
+                                    else if (item.Estado == "Completada")
+                                    {
+                                        <span class="estado-badge estado-en-curso">Completada</span>
+                                    }
+                                    else if (item.Estado == "Pendiente")
+                                    {
+                                        <span class="estado-badge estado-pausado">Pendiente</span>
+                                    }
+                                    else if (item.Estado == "Cancelada")
+                                    {
+                                        <span class="estado-badge estado-cancelado">Cancelada</span>
+                                    }
+                                </td>
+                                <td class="actions">
+                                    <img src="\img\editar.png" alt="Editar" onclick="cargarTarea(@item.IdTarea)" style="cursor:pointer;" />
+                                    <form asp-action="DeleteConfirmed" method="post" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta tarea?');">
+                                        <input type="hidden" name="id" value="@item.IdTarea" />
+                                        <button type="submit" class="bg-transparent border-0">
+                                            <img src="\img\eliminar.png" alt="Eliminar" />
+                                        </button>
+                                    </form>
+
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div id="formularioTarea" class="col-md-5 formulario-tarea border border-0">
+        <div class="modal-content border border-0">
+            <div class="modal-header border border-0">
+                <h3 class="text-blue">Crear Tarea</h3>
+            </div>
+            <div class="modal-body border border-0" style="max-height: 70vh; overflow-y: auto;">
+                <div class="form-group">
+                    <input type="text" id="tituloTarea"
+                           class="form-control border-blue rounded-0 shadow-none"
+                           placeholder="Título" required>
+                    <div class="invalid-feedback">El título es obligatorio.</div>
+                    <input type="hidden" id="idTarea">
+                    <input type="hidden" id="idUsuario" value="@ViewBag.IdUsuario">
+                    <input type="hidden" id="idEquipo">
+                </div>
+                <div class="form-group mt-4">
+                    <label for="descripcionTarea" class="text-blue">Descripción</label>
+                    <textarea id="descripcionTarea" class="form-control tarea-bg shadow-none mt-2" placeholder="Describe tu tarea" rows="4" required></textarea>
+                    <div class="invalid-feedback">La descripción es obligatoria.</div>
+                </div>
+                <div class="form-group mt-4 d-flex justify-content-start">
+                    <label for="fechaLimite" class="label-espaciado text-blue w-25">Fecha Límite</label>
+                    <input type="datetime-local" id="fechaLimite" class="form-control tarea-bg" style="width: 30%" required>
+                    <div class="invalid-feedback">La fecha límite es obligatoria.</div>
+                </div>
+                <div class="form-group mt-4 d-flex justify-content-start">
+                    <label for="estadoTarea" class="label-espaciado w-25 text-blue">Estado</label>
+                    <select id="estadoTarea" class="form-control tarea-bg" style="width: 30%" required>
+                        <option value="">Seleccione un estado</option>
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="En Proceso">En Proceso</option>
+                        <option value="Completada">Completada</option>
+                        <option value="Cancelada">Cancelada</option>
+                    </select>
+                    <div class="invalid-feedback">El estado es obligatorio.</div>
+                </div>
+                <div class="form-group mt-4 d-flex justify-content-start">
+                    <label for="prioridadTarea" class="label-espaciado w-25 text-blue">Prioridad</label>
+                    <select id="prioridadTarea" class="form-control tarea-bg" style="width: 30%" required>
+                        <option value="">Seleccione una prioridad</option>
+                        <option value="Alta">Alta</option>
+                        <option value="Media">Media</option>
+                        <option value="Baja">Baja</option>
+                    </select>
+                    <div class="invalid-feedback">La prioridad es obligatoria.</div>
+                </div>
+                <div class="form-group mt-4 d-flex justify-content-start">
+                    <label for="equipos" class="label-espaciado w-25 text-blue">Equipos</label>
+                    <select id="equipos" class="form-control tarea-bg" style="width: 30%" required>
+                        <option value="">Seleccione un equipo</option>
+                    </select>
+                    <div class="invalid-feedback">El equipo es obligatorio.</div>
+                </div>
+                <div class="form-group mt-4 contenedor-recordatorios">
+                    <label for="mensajeRecordatorio" class="text-blue">Recordatorios</label>
+                    <div class="d-flex mt-2 gap-2 align-items-center">
+                        <div class="flex-grow-1">
+                            <input type="text" id="mensajeRecordatorio" class="form-control" placeholder="Mensaje del recordatorio" required>
+                            <div class="invalid-feedback">El mensaje es obligatorio.</div>
+                        </div>
+                        <div class="flex-grow-1">
+                            <input type="datetime-local" id="fechaRecordatorio" class="form-control" required>
+                            <div class="invalid-feedback">La fecha es obligatoria.</div>
+                        </div>
+                        <button class="border-0 bg-transparent" onclick="agregarRecordatorioATarea()">
+                            <i class="bi bi-plus-circle text-blue" style="font-size: 30px"></i>
+                        </button>
+                    </div>
+                    <div class="mt-3">
+                        <div id="listaRecordatorios" class="d-flex flex-column gap-2">
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group mt-4">
+                    <label for="comentarios" class="text-blue">Comentarios</label>
+                    <div class="contenedor-comentarios mt-2">
+                        <div class="zona-comentarios" id="zona-comentarios">
+                        </div>
+                        <div class="zona-input">
+                            <input type="text" id="comentarioInput" class="input-comentario" placeholder="Escribe un comentario...">
+                            <button class="btn-enviar" onclick="enviarComentario()">
+                                <span class="flecha-icono"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer w-100">
+                <button class="btn-cancelar text-blue" onclick="toggleFormulario()">Cancelar</button>
+                <button class="btn-crear" onclick="guardarTarea()">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+</body>
